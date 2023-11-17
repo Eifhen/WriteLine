@@ -1,0 +1,138 @@
+
+
+.activebar {
+  width: 100%;
+  height: 100vh;
+  padding: 0rem 0.3rem;
+  background-color: var(--pure);
+  background-image: var(--blue-gradient);
+  border-right: 1px solid var(--gray-light);
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    7.5%
+    92.5%
+  ;
+  grid-template-areas: 
+    "elements"
+    "configuration"
+  ;
+}
+
+/********************************
+  ActiveBar - Elements
+*********************************/
+
+.activebar .activebar-elements {
+  grid-area: elements;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem 0.5rem;
+  gap: 10px;  
+
+}
+
+.activebar .activebar-elements .chats {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--blue700);
+  font-weight: bold;
+  position: relative;
+}
+
+/********************************
+  ActiveBar - Active Item
+*********************************/
+
+.activebar .active-item {
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.activebar .active-item.active {
+  /* background-color: var(--gray-light); */
+  color: var(--blue600);
+}
+
+.activebar .active-item:hover {
+  opacity: 0.8;
+}
+
+.activebar .active-item::before {
+  visibility: hidden;
+  content: "";
+  border-radius: 25%;
+  background-color: var(--blue400);
+  position: absolute;
+  top: 50%;
+  right: 90%;
+  margin-top: -10px;
+  width: 4px;
+  height: 20px;
+}
+
+.activebar .active-item.active::before,
+.activebar .active-item:hover::before {
+  visibility: visible;
+}
+
+/********************************
+  ActiveBar - Configuration
+*********************************/
+.activebar .activebar-configuration {
+  grid-area: configuration;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;  
+  padding-bottom: 0.5rem;
+}
+
+.activebar .activebar-configuration .user-configuration:hover {
+  opacity: 0.8;
+}
+
+.activebar .activebar-configuration .user-configuration {
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  color: var(--blue700);
+  background-color: var(--blue100);
+  border: 1px solid var(--blue700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+
+}
+
+.activebar .activebar-configuration .user-configuration img {
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+}
+
+.activebar .activebar-configuration .account-configuration {
+  font-size: 24px;
+  color: var(--blue700);
+}
+

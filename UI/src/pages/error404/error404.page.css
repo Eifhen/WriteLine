@@ -1,0 +1,47 @@
+
+
+
+.error404-page {
+  background-image: var(--blue-gradient);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    90%
+    10%
+  ;
+  grid-template-areas: 
+    "error404_content"
+    "error404_footer"
+  ;
+}
+
+.error404-page .error404-content {
+  grid-area: error404_content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.error404-page .error404-content h1 {
+  letter-spacing: 0.5rem;
+  font-size: 5rem;
+  font-weight: 400;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.error404-page .error404-content h1 small {
+  font-size: 2rem;
+  letter-spacing: normal;
+}
+
+.error404-page .error404-footer {
+  grid-area: error404_footer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

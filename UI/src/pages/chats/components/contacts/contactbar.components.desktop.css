@@ -1,0 +1,162 @@
+
+
+.contactbar {
+  width:100%;
+  height: 100%; 
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    15% 
+    85%
+  ;
+  grid-template-areas: 
+    "contactbar_header"
+    "contactbar_body"
+  ;
+  border-right: 1px solid var(--gray-white);
+}
+
+
+/***************************************
+  Header Title and Options
+****************************************/
+.contactbar .contactbar-header {
+  grid-area: contactbar_header;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    50% 
+    50%
+  ;
+  grid-template-areas: 
+    "contactbar_options"
+    "contactbar_search"
+  ;
+}
+
+.contactbar .contactbar-header .contactbar-options {
+  grid-area: contactbar_options;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1rem 0.5rem;
+
+}
+
+.contactbar .contactbar-header .contactbar-options h1 {
+  font-family: var(--main-font) !important;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--blue700);
+}
+
+.contactbar .contactbar-header .contactbar-options .new-msg {
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-white);
+  color: var(--blue400)
+}
+
+.contactbar .contactbar-header .contactbar-options .new-msg:hover {
+  opacity: 0.5;
+}
+
+/**********************
+  Search Input
+**********************/
+.contactbar .contactbar-header .contactbar-search {
+  grid-area: contactbar_search;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0rem 1rem;
+  position: relative;
+}
+
+.contactbar .contactbar-header .contactbar-search .icon {
+  position: absolute;
+  top: 50%;
+  left: 25px; /* Ajusta la posición del icono según lo necesites */
+  transform: translateY(-50%);
+  font-size: 14px;
+  padding-bottom: 4px;
+  color: var(--gray);
+}
+
+.contactbar .contactbar-header .contactbar-search input {
+  padding: 0.5rem 0.5rem 0.5rem 30px;
+  border-radius: 5px;
+  border: 0;
+  outline: none;
+  width: 100%;
+  background-color: var(--gray-white);
+  border-bottom: 2px solid var(--gray-light);
+}
+
+.contactbar .contactbar-header .contactbar-search input:focus {
+  border-bottom: 3px solid var(--blue300);
+}
+
+.contactbar .contactbar-body {
+  grid-area: contactbar_body;
+  padding: 1rem 1rem 2rem;
+  overflow-y: auto;
+}
+
+
+/**********************************************
+  Contact ITEM
+***********************************************/
+
+.contactbar .contactbar-body .contact-item {
+  border-radius: 15px;
+  height: 70px;
+  width: 100%;
+  display:flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 0.5rem;
+  cursor: pointer;
+}
+
+.contactbar .contactbar-body .contact-item:hover { 
+  background-color: var(--blue50);
+}
+
+.contactbar .contactbar-body .contact-item.active {
+  background-color: var(--blue100) !important;
+}
+
+.contactbar .contactbar-body .contact-item img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background-color: var(--gray-light);
+}
+
+.contactbar .contactbar-body .contact-item .contact-item-info {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.contactbar .contactbar-body .contact-item .contact-item-info h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue700);
+  margin: 0;
+  padding: 0 0 0.3rem 0;
+}
+
+.contactbar .contactbar-body .contact-item .contact-item-info p {
+  font-size: 14px;
+  color: var(--gray);
+}
+

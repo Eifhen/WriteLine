@@ -1,0 +1,33 @@
+fieldset.forminput {
+  border: none;
+  margin:0;
+  padding:0;
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset.forminput input {
+  border-radius: 8px;
+  padding: 0.6rem;
+  border: 1px solid var(--gray);
+  width: 100%;
+}
+
+fieldset.forminput input:invalid[data-focused="true"],
+fieldset.forminput input:invalid[data-show-error="true"] {
+  border-color: var(--wine);
+}
+
+fieldset.forminput input:valid {
+  border-color: var(--green) !important;
+}
+
+fieldset.forminput .forminput-error {
+  display: none;
+  color: var(--wine);
+}
+
+fieldset.forminput input:invalid[data-focused="true"] ~ .forminput-error,
+fieldset.forminput input:invalid[data-show-error="true"] ~ .forminput-error {
+  display: block;
+}

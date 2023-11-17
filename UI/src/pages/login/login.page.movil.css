@@ -1,0 +1,9 @@
+
+
+
+
+@media (max-width: 410px){
+  .login-page .login-page-content .login-card {
+    width: 100% !important;
+  }
+}

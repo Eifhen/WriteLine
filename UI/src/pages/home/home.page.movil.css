@@ -1,0 +1,29 @@
+
+@media (max-width:1200px ){
+  .home-page .home-footer {
+    align-items: center;
+  }
+}
+
+@media (max-width:900px){
+
+  .home-page > .title {
+    font-size: 18px !important;
+  }
+
+  .home-page > .logo-title.logo-title-intro {
+    font-size: 3rem !important;
+  }
+  
+  .home-page > .logo-title.logo-title-intro i {
+    font-size: 4rem !important;
+  }
+}
+
+
+@media (max-width: 500px){
+  .home-page > .title {
+    font-size: 16px !important;
+  }
+}
+

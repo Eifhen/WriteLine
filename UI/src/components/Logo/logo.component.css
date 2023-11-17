@@ -1,0 +1,64 @@
+
+
+.writeline-logo { 
+  margin:0;
+  padding:0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.writeline-logo .logo-icon {
+  position: relative;
+}
+
+.writeline-logo .logo-icon .ri-chat-3-line {
+ 
+}
+
+.writeline-logo .logo-icon .ri-chat-3-fill {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  color: #75C0E0;
+}
+
+.icon-line { font-size: 13.5rem; }
+.icon-fill { font-size: 9rem; }
+
+.icon-line-navbar {
+  font-size: 4rem;
+}
+
+.icon-fill-navbar {
+  font-size: 2.5rem;
+}
+
+.writeline-logo .logo-label {
+  background-color: white;  /*  #d9d9d9 */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  z-index:3;
+  border-radius: 25px;
+  font-size: 5rem;
+}
+
+.writeline-logo span {
+  font-family: 'Montserrat Alternates', sans-serif !important;
+  font-weight: bold;
+}
+
+@media (max-width: 600px){
+  .writeline-logo .logo-label {
+    font-size: 3.3rem;
+  }
+
+  .icon-line { font-size: 9rem; }
+  .icon-fill { font-size: 6rem; }
+}

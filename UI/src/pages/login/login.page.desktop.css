@@ -1,0 +1,89 @@
+
+
+.login-page {
+  background-image: var(--blue-gradient);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    90%
+    10%
+  ;
+  grid-template-areas: 
+    "login_page_content"
+    "login_page_footer"
+  ;
+}
+
+.login-page .login-page-content {
+  grid-area: login_page_content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 1rem;
+}
+
+.login-page .login-footer {
+  grid-area: login_page_footer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page .login-footer p {
+  text-wrap: wrap;
+}
+
+
+
+.login-page .login-page-content .login-card {
+  width: 400px;
+  height: 600px;
+  background-color: white;
+  border-radius: 25px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    20%
+    60%
+    20%
+  ;
+  grid-template-areas: 
+    "login_card_header"
+    "login_card_body"
+    "login_card_footer"
+  ;
+}
+
+.login-page .login-page-content .login-card .login-card-header {
+  grid-area: login_card_header;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.login-page .login-page-content .login-card .login-card-body {
+  grid-area: login_card_body;
+  padding: 1rem 1.5rem 0 1.5rem;
+  text-align: left;
+  
+}
+
+.login-page .login-page-content .login-card .login-card-body h1 {
+  margin: 0;
+  padding: 1rem 0 0 0;
+  font-size: 20px;
+  font-family: var(--main-font);
+  color: var(--blue400);
+ 
+}
+
+
+.login-page .login-page-content .login-card .login-card-footer {
+  grid-area: login_card_footer;
+  padding: 1rem 1.5rem 0 1.5rem;
+}

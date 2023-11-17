@@ -1,0 +1,40 @@
+
+.home-page {
+  background-image: var(--blue-gradient);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    90%
+    10%
+  ;
+  grid-template-areas: 
+    "home_page_content"
+    "home_page_footer"
+  ;
+}
+
+.home-page .home-page-content {
+  grid-area: home_page_content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.home-page .home-page-content .home-buttons {
+  display: flex;
+  padding: 0.5rem 1rem;
+}
+
+.home-page .home-footer {
+  grid-area: home_page_footer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-page .home-footer p {
+  text-wrap: wrap;
+}

@@ -1,0 +1,108 @@
+
+
+
+@media (max-width:1200px ){
+  .signup-page .signup-page-body .signup-card {
+    background-color: var(--pure);
+    width: 90vw;
+    height: 80vh;
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas: 
+      "signup_card_intro signup_card_form"
+    ;
+  }
+
+  .signup-page .signup-page-footer{
+    align-items: flex-end;
+    padding-bottom: 1rem;
+  }
+}
+
+@media (max-width:800px ){
+
+  .signup-page .signup-page-header{
+    padding: 2.8rem 2rem 2rem 2rem;
+  }
+
+  .signup-page .signup-page-body {
+    padding: 3rem 0;
+  }
+
+  .signup-page .signup-page-body .signup-card {
+    background-color: var(--pure);
+    width: 90vw;
+    height: auto !important;
+    margin: auto;
+    box-shadow: var(--shadow);
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-areas: 
+      "signup_card_intro" 
+      "signup_card_form"
+    ;
+    grid-template-rows: 
+      300px 
+      max-content
+    ;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-intro,
+  .signup-page .signup-page-body .signup-card .signup-card-mask {
+    border-radius: 15px !important;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-intro {
+    background-position: top !important;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form {
+    height: auto;
+    padding: 1rem 2rem;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form form {
+    height: auto;
+    padding-bottom: 2rem;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form form h1 {
+    padding: 1rem 0rem 1.5rem 0rem !important;  
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form form button.btn-writeline {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+  }
+}
+
+@media (max-width:600px ){
+  .signup-page .signup-page-header{
+    padding: 3rem 2rem 2rem 1.3rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .signup-card-form .row {
+    flex-direction: column;
+  }
+   
+  .signup-page .signup-page-body .signup-card .signup-card-form form {
+    height: auto;
+    padding-bottom: 0rem;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form form fieldset {
+    width: 100%;
+  }
+
+  .signup-page .signup-page-body .signup-card .signup-card-form form button.btn-writeline {
+    position: relative;
+    margin-top: 2rem;
+    width: 100%;
+  }
+
+}

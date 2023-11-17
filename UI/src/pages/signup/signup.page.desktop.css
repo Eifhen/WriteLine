@@ -1,0 +1,160 @@
+
+
+.signup-page {
+  background-image: var(--blue-gradient);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    60px
+    1fr
+    10%
+  ;
+
+  grid-template-areas: 
+    "signup_header"
+    "signup_body"
+    "signup_footer"
+  ;
+}
+
+.signup-page .signup-page-header{
+  grid-area: signup_header;
+  display: flex;
+  align-items: center;
+  padding: 2.8rem 2rem 2rem 2.5rem;
+ 
+}
+
+.signup-page .signup-page-body {
+  min-height: calc(100% - 60px);
+  grid-area: signup_body;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.signup-page .signup-page-footer{
+  grid-area: signup_footer;
+  /* padding: 1.1rem; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*************************
+ ### Signup Card
+*************************/
+.signup-page .signup-page-body .signup-card {
+  background-color: var(--pure);
+  width: 80vw;
+  min-height: 71vh;
+  margin: auto;
+  box-shadow: var(--shadow);
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 35% 65%;
+  grid-template-areas: 
+    "signup_card_intro signup_card_form"
+  ;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-intro {
+  grid-area: signup_card_intro;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  border-radius: 15px 0px 0px 15px;
+  background-image: url("../../assets/images/chat-1.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-mask {
+  border-radius: 15px 0px 0px 15px;
+  position: absolute;
+  top:0;
+  left:0;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  opacity: 0.4;
+  z-index: 2;
+}
+
+.signup-page .signup-page-body .signup-card 
+.signup-card-intro .signup-card-intro-content {
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  border-radius: 15px 0px 0px 15px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  padding-top: 2rem;
+}
+
+.signup-page .signup-page-body .signup-card 
+.signup-card-intro .signup-card-intro-content h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--blue100);
+  padding:0 2rem;
+}
+
+.signup-page .signup-page-body .signup-card 
+.signup-card-intro .signup-card-intro-content h1 i {
+  font-size: 4.4rem;
+}
+
+
+.signup-page .signup-page-body .signup-card .signup-card-form {
+  grid-area: signup_card_form;
+  padding: 1rem 3rem;
+ 
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form {
+  position: relative;
+  height: 100%;
+  
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form .row {
+  margin-top: 1.5rem;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form h1 {
+  font-size: 1.3rem;
+  margin:0;
+  padding: 0.5rem 0 2rem 0;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form fieldset {
+  width: 46%;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form fieldset label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue950);
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form fieldset label span {
+  font-size: 10px !important;
+}
+
+.signup-page .signup-page-body .signup-card .signup-card-form form button.btn-writeline {
+  position: absolute;
+  bottom: 10px;
+  right: 0px;
+  font-size: 14px !important;
+  letter-spacing: normal !important;
+}
+
+
+
