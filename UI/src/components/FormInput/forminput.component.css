@@ -8,7 +8,7 @@ fieldset.forminput {
 
 fieldset.forminput input {
   border-radius: 8px;
-  padding: 0.6rem;
+  padding: 0.6rem 15% 0.6rem 0.6rem;
   border: 1px solid var(--gray);
   width: 100%;
 }
@@ -30,4 +30,21 @@ fieldset.forminput .forminput-error {
 fieldset.forminput input:invalid[data-focused="true"] ~ .forminput-error,
 fieldset.forminput input:invalid[data-show-error="true"] ~ .forminput-error {
   display: block;
+}
+
+
+/** 
+  Eye
+**/
+
+fieldset.forminput .input-wrapper {
+  position: relative;
+} 
+
+fieldset.forminput .input-wrapper .input-eye {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4%;
+  z-index: 2;
 }

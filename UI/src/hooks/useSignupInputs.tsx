@@ -40,7 +40,7 @@ export default function useSignupInputs () : IFormInput[] {
         name:"nombre",
         placeholder:"Introduce tu nombre",
         required: true,
-        pattern: "^[a-zA-Z]{3,16}$",
+        pattern: "^[a-zA-ZáéíóúÁÉÍÓÚ]{3,16}$",
         value: inputs.nombre,
         onChange: handleChange
       },
@@ -55,6 +55,7 @@ export default function useSignupInputs () : IFormInput[] {
         name:"apellido",
         placeholder:"Introduce tu apellido",
         required: true,
+        pattern: "^[a-zA-ZáéíóúÁÉÍÓÚ]{3,16}$",
         value: inputs.apellido,
         onChange: handleChange
       }  
@@ -79,7 +80,7 @@ export default function useSignupInputs () : IFormInput[] {
       required: true, 
       autoFocus:true,
       input:{
-        type:"text",
+        type:"password",
         name:"password",
         placeholder:"Introduce tu contraseña",
         required: true,
@@ -94,7 +95,7 @@ export default function useSignupInputs () : IFormInput[] {
       required: true, 
       autoFocus: true,
       input:{
-        type:"text",
+        type:"password",
         name:"confirm_password",
         placeholder:"Confirma tu contraseña",
         required: true,

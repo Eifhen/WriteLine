@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 export function isEmpty(value:any){
   if (value === null || value === undefined) {
     return true;

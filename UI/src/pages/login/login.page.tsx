@@ -7,6 +7,8 @@ import Button from '../../components/Button/Button.component';
 import './login.page.desktop.css';
 import './login.page.movil.css';
 import { useNavigate } from "react-router-dom";
+import SigninService from "../../services/SigninService/SigninService";
+import notify from "../../utils/notify";
 
 
 export default function LoginPage() {
@@ -20,14 +22,24 @@ export default function LoginPage() {
     const form = event.target;
     if(form.checkValidity()){
       setShowError(false);
-      const data = Object.fromEntries(new FormData(form).entries());
-      // request
       setDisable(true);
+      const data = Object.fromEntries(new FormData(form).entries());
+      const model = SigninService.GetModel(data);
+      SigninService.Login(model)
+      .then((res:any)=>{
+        console.log("res =>", res);
+        notify("Bienvenido a WriteLine","success");
+        //navigate("/chats");
+      })
+      .catch((err:any)=>{
+        notify(err.message,"error");
+        setDisable(false);
+        throw err;
+      });
     }
     else {
      setShowError(true)
     }
-    navigate("/chats");
   }
   
   return (

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction} from 'express';
-import { GetHttpErrorMsg } from './codigos.http';
+import { GetHttpErrorMsg } from './codigos.http.config';
 
 export class RequestError extends Error {
   status: number;

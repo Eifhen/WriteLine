@@ -9,6 +9,6 @@ export const usersData:IUserModel[] = [
     nombre:"Gabriel",
     apellido:"Jiménez",
     email:"JimenezG905@gmail.com",
-    password:"12345",
+    password:"KK##12345",
   }
 ]

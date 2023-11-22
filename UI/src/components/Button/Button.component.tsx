@@ -2,7 +2,7 @@
 
 
 import { useState } from 'react';
-import './button.component.css';
+import './Button.component.css';
 
 
 
@@ -11,6 +11,8 @@ interface IButton {
   className?:string;
   operation?: () => void;
   isLoading?: boolean;
+  height?:string;
+  width?:string;
 }
 
 export default function Button(props:IButton){
@@ -25,7 +27,8 @@ export default function Button(props:IButton){
   };
 
   return(
-    <button 
+    <button
+      style={{height:props.height, width: props.width}} 
       className={`btn-writeline ${props.className}`} 
       onClick={props.operation}
       onMouseEnter={handleMouseEnter}
@@ -36,7 +39,6 @@ export default function Button(props:IButton){
       {props.isLoading ? (
         <div className="loader-container">
           <span className="loader"></span>
-          Cargando...
         </div>
       ) : (
         <>{props.title}</>

@@ -12,6 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
 }
 
 .btn-writeline:disabled {
@@ -32,7 +33,7 @@
 .btn-writeline.bg-blue400:disabled {
   background-color: var(--blue200) !important;
   color: var(--blue700) !important;
-  opacity: 0.5 !important;
+  opacity: 0.6 !important;
   font-weight: bolder;
 }
 

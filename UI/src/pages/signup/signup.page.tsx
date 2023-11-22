@@ -6,22 +6,39 @@ import './signup.page.desktop.css';
 import './signup.page.movil.css';
 import Footer from '../../components/Footer/footer.component';
 import Button from '../../components/Button/Button.component';
+import SignupService from '../../services/SignupService/SignupService';
+import { useNavigate } from 'react-router-dom';
+import notify from '../../utils/notify';
 
 export default function SignupPage() {
  
   const formInputs = useSignupInputs();
+  const navigate = useNavigate();
   const [showError, setShowError] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   function handleSubmit(event:any){
     event.preventDefault();
     const form = event.target;
     if(form.checkValidity()){
       setShowError(false);
+      setIsLoading(true);
       const data = Object.fromEntries(new FormData(form).entries());
-      // request
+      const user = SignupService.GetModel(data);
+      SignupService.Register(user)
+      .then((res:any )=> {
+        notify("Registro Exitoso", "success", ()=>{
+          navigate("/login");
+        });
+      })
+      .catch((err:any) => {
+        notify(err.message,"error");
+        setIsLoading(false);
+        throw err;
+      });
+  
     }
     else {
-      //alert("Invalid");
       setShowError(true)
     }
   }
@@ -57,7 +74,13 @@ export default function SignupPage() {
                   <FormInput key={index} showError={showError} {...input} />
                 ))}
               </div>
-              <Button className="bg-blue400 text-white fw-bold" title="Registrarse" />
+              <Button 
+                className="bg-blue400 text-white fw-bold " 
+                title="Registrarse"
+                height='48px' 
+                width='110px'
+                isLoading={isLoading} 
+              />
             </form>
           </div>
         </div>

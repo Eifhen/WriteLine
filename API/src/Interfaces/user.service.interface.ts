@@ -1,5 +1,5 @@
 import IUserModel from "../Models/user.model";
-import { IResponseHandler } from "../Utilis/response.handler";
+import { IResponseHandler } from "../Configuration/response.handler.config";
 
 
 export default interface IUserService {
@@ -7,5 +7,5 @@ export default interface IUserService {
   GetUser(id:string):  IResponseHandler<IUserModel>;
   AddUser(user:IUserModel) : IResponseHandler<IUserModel>;
   UpdateUser(id:string, user:IUserModel) : IResponseHandler<IUserModel>;
-  DeleteUser(id:string): IResponseHandler<IUserModel>;
+  DeleteUser(id:string): IResponseHandler<IUserModel[]>;
 }

@@ -44,7 +44,7 @@ export default function useLoginInputs () : IFormInput[] {
       required: true, 
       autoFocus:true,
       input:{
-        type:"text",
+        type:"password",
         name:"password",
         placeholder:"Introduce tu contraseña",
         required: true,
