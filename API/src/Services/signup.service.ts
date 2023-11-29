@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import ISignUpService from "../Interfaces/signup.service.interface";
 import IUserModel from "../Models/user.model";
-import { CodigoHTTP } from "../Configuration/codigos.http.config";
+import { CodigoHTTP } from "../Utilis/codigosHttp";
 import { ErrorHandler } from "../Configuration/error.handler.config";
 import { IResponseHandler, ResponseHandler } from "../Configuration/response.handler.config";
 import SignUpValidation from "../Validations/signup.validations";

@@ -3,5 +3,5 @@ import ILoginModel from "../Models/login.model";
 
 export default interface ISignInService {
   
-  Login(data:ILoginModel): IResponseHandler<ILoginModel>;
+  Login(data:ILoginModel): IResponseHandler<string>;
 }

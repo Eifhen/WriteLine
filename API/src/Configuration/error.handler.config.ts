@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction} from 'express';
-import { GetHttpErrorMsg } from './codigos.http.config';
+import { GetHttpErrorMsg } from '../Utilis/codigosHttp';
 
 export class RequestError extends Error {
   status: number;
@@ -22,6 +22,11 @@ export function RequestErrorHandler(err: Error, req: Request, res: Response, nex
   if (err instanceof RequestError && err.status) {
     statusCode = err.status;
   }
+  
+  console.log("RequestErrorHandler", {
+    statusCode,
+    message: err.message,
+  });
 
   return res.status(statusCode).json({
     status: statusCode,

@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
-import toJson from "../../utils/json";
+import { jwtDecode } from "jwt-decode";
+import { CodigoHTTP } from "../../utils/codigos.http.config";
 
 /*
   Esta clase se encarga de realizar las peticiones HTTP,
@@ -22,11 +23,23 @@ class HTTPService {
     const instance = axios.create({});
     instance.defaults.headers.common.Authorization = this.GetToken() ?? '';
     instance.defaults.headers.common[this.API_KEY_HEADER] = this.API_KEY;
+    instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === CodigoHTTP.Unauthorized) {
+          this.RemoveToken();
+          window.location.replace('/home');
+        }
+    
+        return Promise.reject(error);
+      }
+    );
     return instance;
   }
 
   StoreToken(token:string){
     localStorage.setItem("WL_TOKEN", token);
+    this.axiosInstance.defaults.headers.common.Authorization = token;
   }
 
   RemoveToken(){
@@ -34,13 +47,13 @@ class HTTPService {
     this.axiosInstance.defaults.headers.common.Authorization = '';
   }
 
-  GetToken(){
-    const token = localStorage.getItem("WL_TOKEN");
-    console.log("token =>", token);
-    return token;
-    //return toJson(token);
+  DecodeToken(token: string) {
+    return jwtDecode(token);
   }
 
+  GetToken(){
+    return localStorage.getItem("WL_TOKEN");
+  }
 
   GetUrl(url:string){
     if (
@@ -92,20 +105,15 @@ class HTTPService {
   }
 
   Delete<t>(url: any, data?: any): Promise<t> {
-    if (data) {
-      return new Promise<t>((resolve, reject)=>{
-        this.axiosInstance
-          .delete(this.GetUrl(url), {data})
-          .then((res: any)=> resolve(res.data))
-          .catch((err: any)=> reject(err.response.data));
-      });
-    }
-    return new Promise<t>((resolve, reject) => {
-      this.axiosInstance
-        .delete(this.GetUrl(url))
-        .then((res: any) => resolve(res.data))
-        .catch((err: any) => reject(err.response.data));
-    });
+    const deletePromise = data
+    ? this.axiosInstance.delete(this.GetUrl(url), { data })
+    : this.axiosInstance.delete(this.GetUrl(url));
+
+    return new Promise<t>((resolve, reject)=>{
+      deletePromise
+      .then((res)=> resolve(res.data))
+      .catch((err: any) => reject(err.response.data));
+    })
   }
 
   AnonymousPost<t>(url: any, data: any): Promise<t> {
@@ -123,7 +131,6 @@ class HTTPService {
 
 
 }
-
 
 const HTTP = new HTTPService();
 export default HTTP;

@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import IUserModel from "../Models/user.model";
 import SignUpServices from "../Services/signup.service";
-import { CodigoHTTP } from "../Configuration/codigos.http.config";
+import { CodigoHTTP } from "../Utilis/codigosHttp";
 
 const SignUpController = Router();
 

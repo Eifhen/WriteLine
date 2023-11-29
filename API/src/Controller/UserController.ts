@@ -1,12 +1,13 @@
 import { Router, Response, Request, NextFunction } from "express";
 import IUserModel from '../Models/user.model';
 import UserServices from "../Services/user.service";
-import { CodigoHTTP } from "../Configuration/codigos.http.config";
+import { CodigoHTTP } from "../Utilis/codigosHttp";
+import WriteLineRequest from "../Interfaces/auth.request.interface";
 
 
 const UserController = Router();
  
-UserController.get("/", (req:Request, res:Response, next:NextFunction)=>{
+UserController.get("/", (req:WriteLineRequest, res:Response, next:NextFunction)=>{
   try {
     const data = UserServices.GetUsers();
     return res.status(CodigoHTTP.OK).json(data);
@@ -16,7 +17,7 @@ UserController.get("/", (req:Request, res:Response, next:NextFunction)=>{
   }
 });
 
-UserController.get("/:id", (req:Request, res:Response, next:NextFunction)=> {
+UserController.get("/:id", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
   try {
     const data = UserServices.GetUser(req.params.id);
     return res.status(CodigoHTTP.OK).json(data);
@@ -26,7 +27,7 @@ UserController.get("/:id", (req:Request, res:Response, next:NextFunction)=> {
   }
 });
 
-UserController.post("/", (req:Request, res:Response, next:NextFunction)=> {
+UserController.post("/", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
   try {
     const newUser:IUserModel = req.body;
     const data = UserServices.AddUser(newUser);
@@ -37,7 +38,7 @@ UserController.post("/", (req:Request, res:Response, next:NextFunction)=> {
   }
 })
 
-UserController.put("/:id", (req:Request, res:Response, next:NextFunction)=>{
+UserController.put("/:id", (req:WriteLineRequest, res:Response, next:NextFunction)=>{
   try {
     const user:IUserModel = req.body;
     const data = UserServices.UpdateUser(req.params.id, user);
@@ -48,7 +49,7 @@ UserController.put("/:id", (req:Request, res:Response, next:NextFunction)=>{
   }
 })
 
-UserController.delete(":id", (req:Request, res:Response, next:NextFunction)=> {
+UserController.delete(":id", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
   try {
     const data = UserServices.DeleteUser(req.params.id);
     return res.status(CodigoHTTP.OK).json(data);

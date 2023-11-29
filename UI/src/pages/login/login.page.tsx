@@ -9,6 +9,7 @@ import './login.page.movil.css';
 import { useNavigate } from "react-router-dom";
 import SigninService from "../../services/SigninService/SigninService";
 import notify from "../../utils/notify";
+import HTTP from "../../services/HttpService/HTTPService";
 
 
 export default function LoginPage() {
@@ -27,9 +28,10 @@ export default function LoginPage() {
       const model = SigninService.GetModel(data);
       SigninService.Login(model)
       .then((res:any)=>{
-        console.log("res =>", res);
+        const token = res.data;
+        HTTP.StoreToken(token);
         notify("Bienvenido a WriteLine","success");
-        //navigate("/chats");
+        navigate("/chats");
       })
       .catch((err:any)=>{
         notify(err.message,"error");

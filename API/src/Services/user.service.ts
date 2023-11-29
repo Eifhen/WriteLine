@@ -1,4 +1,4 @@
-import { CodigoHTTP, MensajeHTTP } from "../Configuration/codigos.http.config";
+import { CodigoHTTP, MensajeHTTP } from "../Utilis/codigosHttp";
 import { usersData } from "../Data/users";
 import IUserService from "../Interfaces/user.service.interface";
 import IUserModel from "../Models/user.model";

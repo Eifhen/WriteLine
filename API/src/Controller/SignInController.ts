@@ -1,7 +1,7 @@
 
 import { Request, Response, NextFunction, Router } from 'express';
 import ILoginModel from '../Models/login.model';
-import { CodigoHTTP } from '../Configuration/codigos.http.config';
+import { CodigoHTTP } from '../Utilis/codigosHttp';
 import SignInServices from '../Services/signin.service';
 
 
