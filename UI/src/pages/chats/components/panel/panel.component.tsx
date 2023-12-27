@@ -1,29 +1,35 @@
 import { forwardRef, useImperativeHandle, useState, useEffect, useRef, MutableRefObject } from 'react';
 import Logo from '../../../../components/Logo/logo.component';
-import { IContactBar } from '../contacts/contactbar.component';
+import { IContactBar } from '../contacts/contact.bar.component';
 import './panel.component.desktop.css';
 import './panel.component.movil.css';
+import IUserDTO from '../../../../models/UserModel';
+import { IChatModel } from '../../../../models/ChatModel';
 
 
 interface IPanelProps {
   contactItemRef?:MutableRefObject<IContactBar>;
+  currentUserGUID: string;
 }
 
 export interface IPanel {
   setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   panelOpen: boolean;
-  setActiveItem: React.Dispatch<React.SetStateAction<number>>;
+  setActiveItem: React.Dispatch<React.SetStateAction<IChatModel>>;
+  setImage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Panel = forwardRef((props:IPanelProps, ref) => {
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
-  const [activeItem, setActiveItem] = useState<number>(-1);
+  const [activeItem, setActiveItem] = useState({} as IChatModel);
+  const [image, setImage] = useState<string>('');
   const textInputRef = useRef<HTMLInputElement>(null);
-  
+
   useImperativeHandle(ref, () : IPanel =>({
     setPanelOpen,
     panelOpen,
-    setActiveItem
+    setActiveItem,
+    setImage
   }));
 
   useEffect(()=> {
@@ -37,9 +43,9 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
       <div className='panel'>
         <div className="panel-header">
           <div className='info-container'>
-            <img src="" alt="" />
+            <img src={image} alt="" />
             <div className="info-body">
-              <h1>Nombre destinatario {activeItem}</h1>
+              <h1>{activeItem.name}</h1>
               <p>últ. vez hoy a la(s) 6:24 p.m.</p>
             </div>
           </div>

@@ -41,6 +41,12 @@
   border-top-color: var(--blue700) !important;
 }
 
+
+.btn-writeline.simple {
+  font-size: 14px !important;
+  letter-spacing: normal !important;
+}
+
 @media (max-width: 500px){
   .btn-writeline {
     font-size: 1rem !important;

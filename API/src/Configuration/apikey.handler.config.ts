@@ -1,6 +1,7 @@
 import { NextFunction, RequestHandler, Request, Response } from "express";
 import { IConfiguracion } from "./configurations";
 import { CodigoHTTP, MensajeHTTP } from "../Utilis/codigosHttp";
+import { ErrorHandler } from "./error.handler.config";
 
 
 /** 
@@ -14,8 +15,11 @@ export default function ApiKeyManager(config:IConfiguracion) : RequestHandler {
       next();
     } else {
       // La API_KEY es inválida, devuelve un error de acceso no autorizado
-      console.log("API KEY Invalida");
-      return res.status(CodigoHTTP.Forbidden).json({ error: MensajeHTTP.Forbidden});
+      throw ErrorHandler(
+        CodigoHTTP.Forbidden, 
+        `${MensajeHTTP.Forbidden}: API KEY Invalida`, 
+        __filename
+      );
     }
   };
 }

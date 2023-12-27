@@ -3,5 +3,5 @@ import ILoginModel from "../Models/login.model";
 
 export default interface ISignInService {
   
-  Login(data:ILoginModel): IResponseHandler<string>;
+  Login(data:ILoginModel): Promise<IResponseHandler<string>>;
 }

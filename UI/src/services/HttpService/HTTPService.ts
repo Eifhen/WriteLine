@@ -27,6 +27,7 @@ class HTTPService {
       (response) => response,
       (error) => {
         if (error.response && error.response.status === CodigoHTTP.Unauthorized) {
+          console.error("SetInstance Error =>", error);
           this.RemoveToken();
           window.location.replace('/home');
         }
@@ -39,7 +40,7 @@ class HTTPService {
 
   StoreToken(token:string){
     localStorage.setItem("WL_TOKEN", token);
-    this.axiosInstance.defaults.headers.common.Authorization = token;
+    this.axiosInstance.defaults.headers.common.Authorization = this.GetToken(token);
   }
 
   RemoveToken(){
@@ -48,12 +49,20 @@ class HTTPService {
   }
 
   DecodeToken(token: string) {
-    return jwtDecode(token);
+    return jwtDecode<any>(token);
   }
 
-  GetToken(){
-    return localStorage.getItem("WL_TOKEN");
+  GetToken(tk?:string){
+    const token = tk ?? localStorage.getItem("WL_TOKEN");
+    return token ? `Bearer ${token}` : '';
   }
+
+  GetCurrentUser(){
+    const token = this.GetToken().toString();
+    const data = this.DecodeToken(token);
+    return data;
+  }
+
 
   GetUrl(url:string){
     if (

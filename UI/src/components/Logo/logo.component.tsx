@@ -10,6 +10,7 @@ interface ILogo {
   className?:string;
   iconFillSize?:string;
   iconLineSize?:string;
+  logoLabelBackgroundColor?:string;
   goTo: string;
   onClick?(): void;
 }
@@ -27,12 +28,18 @@ export default function Logo(props: ILogo) {
   }
 
   return (
-    <div onClick={handleClick} className={`writeline-logo ${props.className}`}>
+    <div onClick={handleClick} className={`writeline-logo lh-1 ${props.className}`}>
       <div className='logo-icon'>
         <i className={`ri-chat-3-fill ${props.iconFillSize}`}></i>
         <i className={`ri-chat-3-line ${props.iconLineSize}`}></i>
       </div>
-      <div className={`logo-label ${props.textColor}`} style={{fontSize:props.size}}>
+      <div 
+        className={`logo-label ${props.textColor}`} 
+        style={{
+          fontSize:props.size,
+          backgroundColor: props?.logoLabelBackgroundColor
+        }}
+      >
         <span className={props.first}>Write</span>
         <span className={props.second}>Line</span>
       </div>

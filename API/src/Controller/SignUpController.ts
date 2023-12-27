@@ -5,11 +5,10 @@ import { CodigoHTTP } from "../Utilis/codigosHttp";
 
 const SignUpController = Router();
 
-SignUpController.post("/", (req:Request, res:Response, next:NextFunction)=>{
+SignUpController.post("/", async (req:Request, res:Response, next:NextFunction)=>{
   try {
     const data:IUserModel = req.body;
-    console.log("data =>", data);
-    const service = SignUpServices.Register(data);
+    const service = await SignUpServices.Register(data);
     return res.status(CodigoHTTP.OK).json(service);
   }
   catch(err:any){

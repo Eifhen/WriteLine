@@ -59,7 +59,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="login-card-body">
-            <h1>Iniciar Sesión</h1>
+            <h1 className="fw-bold">Iniciar Sesión</h1>
               <div className="mt-2">
                 {formInputs.map((input, index) => (
                   <FormInput key={index} fieldClass="mt-1" showError={showError} {...input} />

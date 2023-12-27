@@ -11,14 +11,18 @@ fieldset.forminput input {
   padding: 0.6rem 15% 0.6rem 0.6rem;
   border: 1px solid var(--gray);
   width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 fieldset.forminput input:invalid[data-focused="true"],
-fieldset.forminput input:invalid[data-show-error="true"] {
+fieldset.forminput input[data-show-error="true"]:invalid {
   border-color: var(--wine);
 }
 
-fieldset.forminput input:valid {
+fieldset.forminput input:valid[data-focused="true"] {
   border-color: var(--green) !important;
 }
 
@@ -27,8 +31,8 @@ fieldset.forminput .forminput-error {
   color: var(--wine);
 }
 
-fieldset.forminput input:invalid[data-focused="true"] ~ .forminput-error,
-fieldset.forminput input:invalid[data-show-error="true"] ~ .forminput-error {
+fieldset.forminput input[data-focused="true"]:invalid ~ .forminput-error,
+fieldset.forminput input[data-show-error="true"]:invalid ~ .forminput-error {
   display: block;
 }
 
@@ -43,8 +47,14 @@ fieldset.forminput .input-wrapper {
 
 fieldset.forminput .input-wrapper .input-eye {
   position: absolute;
-  top: 50%;
+  top: 18px;
   transform: translateY(-50%);
   right: 4%;
   z-index: 2;
+}
+
+fieldset.forminput .input-wrapper input[type="file" i]::-webkit-file-upload-button {
+  background-color: var(--gray-light);
+  border: none;
+  cursor: pointer;
 }

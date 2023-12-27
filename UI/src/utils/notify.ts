@@ -16,6 +16,6 @@ export default function notify(msg:string, type:"success"|"error"|"info"|"warnin
     if(callback){
       callback();
     }
-  }, 3000);  
+  }, 2000);  
 
 }

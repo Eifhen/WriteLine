@@ -9,9 +9,9 @@ export default function Footer(props:IFooter){
   return(
     <footer className={`${props.className}`}>
       <p>
-        by 
+        By 
         <a 
-          className="ml-0-5 mr-0-5 text-muted fs-1-4" 
+          className="ml-0-5 mr-0-5 text-muted" 
           href="https://gjimenez-portfolio.netlify.app" 
           target="_blank"
         >

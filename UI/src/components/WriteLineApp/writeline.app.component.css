@@ -1,0 +1,28 @@
+
+
+.writeline-app-container {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: 4% 96%;
+  grid-template-rows: 100vh;
+  grid-template-areas: 
+    "writeline_activebar writeline_content"
+  ;
+  position: relative;
+}
+
+.writeline-app-container .writeline-app-activebar {
+  height: 100%;
+  width: 100%;
+  /* position: fixed;
+  top:0;
+  left: 0; */
+  grid-area: writeline_activebar;
+}
+
+.writeline-app-container .writeline-app-content {
+  grid-area: writeline_content;
+  height: 100%;
+  width: 100%;
+}

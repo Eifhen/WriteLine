@@ -25,18 +25,19 @@ export default function useSignupInputs () : IFormInput[] {
 
   function handleChange(event:any){ 
     setInputs((prev)=> ({
-      ...prev, [event.target.name]: event.target.value
+      ...prev, [event.target.id]: event.target.value
     }));
   }
 
   return [
     {
-      title:'Nombre',
+      title:'Nombre:',
       errorMessage:"El nombre de usuario debe tener entre 3-16 caracteres y no debe poseer números ni ningún caracter especial",
       required: true, 
       autoFocus:true,
       input:{
         type:"text",
+        id:"nombre",
         name:"nombre",
         placeholder:"Introduce tu nombre",
         required: true,
@@ -46,12 +47,13 @@ export default function useSignupInputs () : IFormInput[] {
       },
     },
     {
-      title:'Apellido',
+      title:'Apellido:',
       errorMessage:"El apellido del usuario debe tener entre 3-16 caracteres y no debe poseer números ni ningún caracter especial",
       required:true,
       autoFocus:true, 
       input:{
         type:"text",
+        id:"apellido",
         name:"apellido",
         placeholder:"Introduce tu apellido",
         required: true,
@@ -61,12 +63,13 @@ export default function useSignupInputs () : IFormInput[] {
       }  
     },
     {
-      title:'Email',
+      title:'Email:',
       required: true,
       autoFocus:true,
       errorMessage:"Ingresa un email valido", 
       input:{
         type:"email",
+        id:"email",
         name:"email",
         placeholder:"Introduce tu email",
         required: true,
@@ -75,12 +78,13 @@ export default function useSignupInputs () : IFormInput[] {
       } 
     },
     {
-      title:'Contraseña',
+      title:'Contraseña:',
       errorMessage:"La contraseña debe ser de 5-20 caracteres y debe incluir por lo menos 1 letra, 1 número y un caracter especial (exceptuando al caracter $)", 
       required: true, 
       autoFocus:true,
       input:{
         type:"password",
+        id:"password",
         name:"password",
         placeholder:"Introduce tu contraseña",
         required: true,
@@ -90,12 +94,13 @@ export default function useSignupInputs () : IFormInput[] {
       }
     },
     {
-      title:'Confirmar contraseña',
+      title:'Confirmar contraseña:',
       errorMessage:"las contraseñas no coinciden",
       required: true, 
       autoFocus: true,
       input:{
         type:"password",
+        id:"confirm_password",
         name:"confirm_password",
         placeholder:"Confirma tu contraseña",
         required: true,
@@ -103,6 +108,6 @@ export default function useSignupInputs () : IFormInput[] {
         value: inputs.confirm_password,
         onChange: handleChange
       }
-    }
+    },
   ]
 } 

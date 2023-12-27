@@ -13,12 +13,13 @@ export default function HomePage() {
   return (
     <main className="home-page">
       <div className="home-page-content">
-        <h2 className="title m-0 p-0"> 
+        <h2 className="title m-0 p-0 fw-bold"> 
           Bienvenido a
         </h2>
         <Logo 
           iconLineSize="icon-line" 
-          iconFillSize="icon-fill" 
+          iconFillSize="icon-fill"
+          logoLabelBackgroundColor='#f6f6f6'  
           goTo={""} 
         />
         <div className="home-buttons">

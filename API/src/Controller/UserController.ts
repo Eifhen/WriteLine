@@ -6,10 +6,11 @@ import WriteLineRequest from "../Interfaces/auth.request.interface";
 
 
 const UserController = Router();
- 
-UserController.get("/", (req:WriteLineRequest, res:Response, next:NextFunction)=>{
+
+ // GetUsersByQuery api/users?search=
+UserController.get("/", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
   try {
-    const data = UserServices.GetUsers();
+    const data = await UserServices.GetUsersByQuery(req);
     return res.status(CodigoHTTP.OK).json(data);
   }
   catch(err:any){
@@ -17,9 +18,10 @@ UserController.get("/", (req:WriteLineRequest, res:Response, next:NextFunction)=
   }
 });
 
-UserController.get("/:id", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
+// GetAllUsers
+UserController.get("/all", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
   try {
-    const data = UserServices.GetUser(req.params.id);
+    const data = await UserServices.GetAllUsers(req);
     return res.status(CodigoHTTP.OK).json(data);
   }
   catch(err:any){
@@ -27,10 +29,22 @@ UserController.get("/:id", (req:WriteLineRequest, res:Response, next:NextFunctio
   }
 });
 
-UserController.post("/", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
+// GetUser
+UserController.get("/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=> {
+  try {
+    const data = await UserServices.GetUser(req.params.id);
+    return res.status(CodigoHTTP.OK).json(data);
+  }
+  catch(err:any){
+    next(err);
+  }
+});
+
+// AddUser
+UserController.post("/", async (req:WriteLineRequest, res:Response, next:NextFunction)=> {
   try {
     const newUser:IUserModel = req.body;
-    const data = UserServices.AddUser(newUser);
+    const data = await UserServices.AddUser(newUser);
     return res.status(CodigoHTTP.OK).json(data);
   }
   catch(err:any){
@@ -38,10 +52,11 @@ UserController.post("/", (req:WriteLineRequest, res:Response, next:NextFunction)
   }
 })
 
-UserController.put("/:id", (req:WriteLineRequest, res:Response, next:NextFunction)=>{
+// UpdateUser
+UserController.put("/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
   try {
     const user:IUserModel = req.body;
-    const data = UserServices.UpdateUser(req.params.id, user);
+    const data = await UserServices.UpdateUser(req.params.id, user);
     return res.status(CodigoHTTP.OK).json(data);
   }
   catch(err:any){
@@ -49,9 +64,21 @@ UserController.put("/:id", (req:WriteLineRequest, res:Response, next:NextFunctio
   }
 })
 
-UserController.delete(":id", (req:WriteLineRequest, res:Response, next:NextFunction)=> {
+//DeleteUser
+UserController.delete("/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=> {
   try {
-    const data = UserServices.DeleteUser(req.params.id);
+    const data = await UserServices.DeleteUser(req.params.id);
+    return res.status(CodigoHTTP.OK).json(data);
+  }
+  catch(err:any){
+    next(err);
+  }
+});
+
+// GetUserImage
+UserController.get("/image/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
+  try {
+    const data = await UserServices.GetUserImage(req.params.id);
     return res.status(CodigoHTTP.OK).json(data);
   }
   catch(err:any){

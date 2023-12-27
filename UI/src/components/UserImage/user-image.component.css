@@ -1,0 +1,32 @@
+.user-image {
+  position: relative;
+  border-radius: 50%;
+  background-color: var(--pure);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.user-image .user-image-input-container {
+  position: absolute;
+  right: -10%;
+  top: 50%;
+}
+
+.user-image .user-image-input-container .user-image-icon {
+  cursor: pointer;
+  border-radius: 50%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  color: white;
+  background-color: var(--blue400);
+  transition: 0.1s;
+}
+
+.user-image .user-image-input-container .user-image-icon:hover,
+.user-image .user-image-input-container .user-image-icon:focus {
+  background-color: var(--blue500);
+}

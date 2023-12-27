@@ -5,3 +5,9 @@ export interface AuthenticatedUserModel {
   email: string;
   [key:string]:any;
 }
+
+export interface IDecodedToken {
+  email: string;
+  guid: string;
+  password: string;
+}

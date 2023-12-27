@@ -8,5 +8,5 @@ import { IResponseHandler } from "../Configuration/response.handler.config";
 
 export default interface ISignUpService {
   
-  Register(data:IUserModel): IResponseHandler<IUserModel>;
+  Register(data:IUserModel): Promise<IResponseHandler<IUserModel>>;
 }

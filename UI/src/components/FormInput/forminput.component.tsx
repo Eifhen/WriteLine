@@ -14,7 +14,7 @@ export interface IFormInput {
   showError?:boolean;
 }
 
-export default function FormInput(props:IFormInput) {
+export default function FormInput({...props}:IFormInput) {
   const [focus, setFocus] = useState<boolean>(false);
   const [eye, setEye] = useState<boolean>(false);
   const eyeIcon = eye ? 'ri-eye-line' : 'ri-eye-off-line';
@@ -32,13 +32,14 @@ export default function FormInput(props:IFormInput) {
 
   return (
     <fieldset className={`forminput ${props.fieldClass ?? ''}`}>
-      <label htmlFor={props.input.name}>
+      <label htmlFor={props.input.id}>
         {props.title}
         {props.required && <span className='text-red'> *</span>}
       </label>
-      <div className='input-wrapper'>
+      <div className='input-wrapper' >
         <input 
           ref={props.inputRef} 
+          className='forminput-input'
           onBlur={handleFocus} 
           onFocus={()=> props.autoFocus && setFocus(true)}
           data-focused={focus.toString()}
@@ -46,14 +47,14 @@ export default function FormInput(props:IFormInput) {
           {...props.input} 
           type={type} 
         />
-        {props.input.type === "password" ? (
+        {props.input.type === "password" && (
           <i 
             onClick={EyeHandler} 
             className={`input-eye pointer ${eyeIcon}`}
           />
-        ) : (<></>)}
+        )}
+        <small className="forminput-error">{props.errorMessage}</small>
       </div>
-      <small className="forminput-error">{props.errorMessage}</small>
     </fieldset>
   )
 }

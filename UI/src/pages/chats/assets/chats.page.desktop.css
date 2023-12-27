@@ -5,22 +5,13 @@
   display: grid;
   height: 100%;
   width: 100%;
-  grid-template-columns: 4% 26% 70%;
+  grid-template-columns: 30% 70%;
   grid-template-rows: 100vh;
   grid-template-areas: 
-    "chat_bar chat_contacts chat_msg_panel"
+    "chat_contacts chat_msg_panel"
   ;
   position: relative;
   /* background-image: var(--blue-gradient); */
-}
-
-.chat-page .chat-bar {
-  height: 100%;
-  width: 4%;
-  position: fixed;
-  top:0;
-  left: 0;
-  grid-area: chat_bar;
 }
 
 .chat-page .chat-contacts {

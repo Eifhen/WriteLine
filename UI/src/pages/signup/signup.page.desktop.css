@@ -46,15 +46,21 @@
 /*************************
  ### Signup Card
 *************************/
+.signup-title-container {
+  width: 940px;
+}
+
 .signup-page .signup-page-body .signup-card {
   background-color: var(--pure);
-  width: 80vw;
-  min-height: 71vh;
+  width: 940px;
+  /* min-height: 81vh; */
+
   margin: auto;
   box-shadow: var(--shadow);
   border-radius: 15px;
+  border-right: 6px solid var(--blue400);
   display: grid;
-  grid-template-columns: 35% 65%;
+  grid-template-columns: 420px auto;
   grid-template-areas: 
     "signup_card_intro signup_card_form"
   ;
@@ -115,17 +121,38 @@
 .signup-page .signup-page-body .signup-card .signup-card-form {
   grid-area: signup_card_form;
   padding: 1rem 3rem;
- 
 }
 
 .signup-page .signup-page-body .signup-card .signup-card-form form {
   position: relative;
   height: 100%;
-  
+  width: 80%;
+  margin: 0 auto;
 }
 
+.signup-page .signup-page-body .signup-card 
+.signup-card-form form .user-circle {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: -96px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* box-shadow: inset 0 0rem 1rem rgba(0,0,0,.15)!important; */
+  border-radius: 50%;
+  background-color: var(--pure);
+  z-index: 2;
+}
+
+
 .signup-page .signup-page-body .signup-card .signup-card-form .row {
-  margin-top: 1.5rem;
+  width: 100%;
+  margin: 1.5rem auto 0 auto;
+  flex-direction: column;
+  padding: 4rem 0 1rem 0;
 }
 
 .signup-page .signup-page-body .signup-card .signup-card-form form h1 {
@@ -135,7 +162,7 @@
 }
 
 .signup-page .signup-page-body .signup-card .signup-card-form form fieldset {
-  width: 46%;
+  width: 100%;
 }
 
 .signup-page .signup-page-body .signup-card .signup-card-form form fieldset label {
@@ -149,11 +176,9 @@
 }
 
 .signup-page .signup-page-body .signup-card .signup-card-form form button.btn-writeline {
-  position: absolute;
-  bottom: 10px;
-  right: 0px;
   font-size: 14px !important;
   letter-spacing: normal !important;
+  margin-top: 1rem;
 }
 
 

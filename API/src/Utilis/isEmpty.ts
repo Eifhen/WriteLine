@@ -31,3 +31,10 @@ export function isNotEmpty(value: any): boolean {
 
   return true;
 }
+
+export function ifEmpty(value:any, orValue:any){
+  if(isNotEmpty(value)){
+    return value;
+  }
+  return orValue;
+}

@@ -11,6 +11,7 @@ interface IButton {
   className?:string;
   operation?: () => void;
   isLoading?: boolean;
+  disable?:boolean;
   height?:string;
   width?:string;
 }
@@ -34,7 +35,7 @@ export default function Button(props:IButton){
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       autoFocus={isHovered}
-      disabled={props.isLoading ?? false}
+      disabled={props.isLoading || props.disable || false}
     > 
       {props.isLoading ? (
         <div className="loader-container">
