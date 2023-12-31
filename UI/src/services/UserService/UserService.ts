@@ -38,6 +38,19 @@ class UserServices {
       })
     })
   }
+
+  GetAllUsers(){
+    return new Promise((resolve:(users:IUserDTO[]) => void, reject)=>{
+      HTTP.Get(`/users/all`)
+      .then((res:any)=>{
+        resolve(res.data as IUserDTO[]);
+      })
+      .catch((err:any)=> {
+        reject(err);
+      })
+    })
+  }
+
 }
 
 const UserService = new UserServices();

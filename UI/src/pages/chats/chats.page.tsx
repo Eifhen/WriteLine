@@ -3,6 +3,8 @@ import { useRef, MutableRefObject } from 'react';
 import Panel, { IPanel } from './components/panel/panel.component';
 import './assets/chats.page.desktop.css';
 import './assets/chats.page.movil.css';
+import './assets/contact.card.desktop.css';
+import './assets/contact.input.desktop.css';
 import { useWriteLineContext } from '../../context/writeline.context';
 
 

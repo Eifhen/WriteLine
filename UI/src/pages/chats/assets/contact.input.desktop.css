@@ -1,0 +1,51 @@
+/**********************
+  Search Input
+**********************/
+.contactbar-search {
+  grid-area: contactbar_search;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0rem 1rem;
+  position: relative;
+}
+
+.contactbar-search .icon {
+  position: absolute;
+  top: 50%;
+  left: 25px; /* Ajusta la posición del icono según lo necesites */
+  transform: translateY(-50%);
+  font-size: 14px;
+  padding-bottom: 3.5px;
+  color: var(--gray);
+}
+
+.contactbar-search input {
+  padding: 0.5rem 0.5rem 0.5rem 30px;
+  border-radius: 10px;
+  border: 0;
+  outline: none;
+  width: 100%;
+  background-color: var(--gray-white);
+  border-bottom: 2px solid var(--gray-light);
+}
+
+.contactbar-search input:focus {
+  border-bottom: 3px solid var(--blue300);
+}
+
+.contactbar-search .close-search {
+  position: absolute;
+  top: 50%;
+  right: 25px; /* Ajusta la posición del icono según lo necesites */
+  transform: translateY(-50%);
+  font-size: 20px;
+  padding-bottom: 3.5px;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+.contactbar-search .close-search:hover {
+  color: var(--gray-loyal) !important;
+}
+

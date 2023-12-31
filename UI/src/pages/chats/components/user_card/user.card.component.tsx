@@ -11,10 +11,11 @@ import useGetUserImageByGUID from "../../../../hooks/useUserImage";
 
 interface ISearchedUserCard {
   operation: (base64:string) => void;
+  isActive?:string;
   user:IUserDTO;
 }
 
-export default function SearchedUserCard(props: ISearchedUserCard){
+export default function UserCard(props: ISearchedUserCard){
   const { user, operation } = props;
   const [image, setImage] = useState<string>(UserIcon);
   const fullName = `${user.nombre} ${user.apellido}`;
@@ -24,7 +25,7 @@ export default function SearchedUserCard(props: ISearchedUserCard){
   },[])
   
   return (
-    <div className={`contact-item `} onClick={()=> operation(image)}>
+    <div className={`contact-item ${props.isActive}`} onClick={()=> operation(image)}>
       <img src={image}  alt="" />
       <div className='contact-item-info'>
         <h1 title={fullName}>{fullName}</h1>

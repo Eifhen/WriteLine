@@ -18,11 +18,14 @@ export class UserService implements IUserService {
     this.imageManager = new ImageManager();
   }
 
-  async GetAllUsers(req:WriteLineRequest) : Promise<IResponseHandler<IUserModel[]>> {
-    const find:IUserModel[] | null = await UserModel.find().lean().exec();
+  async GetAllUsers(req:WriteLineRequest) : Promise<IResponseHandler<IUserDTO[]>> {
+    // busca todos los usuarios excepto el actualmente logeado
+    const current = req.currentUser!;
+    const find:IUserModel[] | null = await UserModel.find({ _id: { $ne: current._id }}).lean().exec();
 
     if(find) { 
-      return ResponseHandler<IUserModel[]>(find, MensajeHTTP.OK);
+      const usersDTO:IUserDTO[] = find.map(u => ToUserDTO(u));
+      return ResponseHandler<IUserDTO[]>(usersDTO, MensajeHTTP.OK);
     }
     throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
   }

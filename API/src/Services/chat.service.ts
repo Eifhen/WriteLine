@@ -45,7 +45,7 @@ class ChatServices implements IChatService {
         else {
           // si el chat no existe crea uno nuevo
           const newChat:IChatModel = {
-            name: `${destinatario.nombre} ${destinatario.apellido}`,
+            name: `sender`,
             isGroupChat: false,
             isActive:true,
             creationDate: new Date(),

@@ -1,0 +1,64 @@
+/**********************************************
+  Contact ITEM
+***********************************************/
+
+.contact-item {
+  border-radius: 15px;
+  height: 70px;
+  width: 100%;
+  display:flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.contact-item:hover { 
+  background-color: var(--blue50);
+}
+
+.contact-item.active {
+  background-color: var(--blue100) !important;
+}
+
+.contact-item.active-blue {
+  background-color: var(--blue400) !important;
+}
+
+.contact-item.active-blue .contact-item-info h1 {
+  color: white !important;
+}
+
+.contact-item img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit:cover;
+  object-position: center;
+  background-color: var(--gray);
+}
+
+.contact-item .contact-item-info {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.contact-item .contact-item-info h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue700);
+  margin: 0;
+  padding: 0 0 0rem 0;
+}
+
+.contact-item .contact-item-info p {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--blue800); /* #333333; */
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

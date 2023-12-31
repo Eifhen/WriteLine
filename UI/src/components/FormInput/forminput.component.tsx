@@ -12,6 +12,8 @@ export interface IFormInput {
   inputRef?: React.MutableRefObject<any>;
   autoFocus?: boolean;
   showError?:boolean;
+  noLabel?:boolean;
+  disabled?:boolean;
 }
 
 export default function FormInput({...props}:IFormInput) {
@@ -21,6 +23,7 @@ export default function FormInput({...props}:IFormInput) {
   const initType = useMemo(()=> props.input.type, []);
   const inputType = eye ? "text" : "password";
   const type = initType === "password" ? inputType : initType;
+  const noLabel = props.noLabel != undefined ? props.noLabel : false;
 
   function handleFocus(event:any){
     setFocus(true);
@@ -32,10 +35,12 @@ export default function FormInput({...props}:IFormInput) {
 
   return (
     <fieldset className={`forminput ${props.fieldClass ?? ''}`}>
-      <label htmlFor={props.input.id}>
-        {props.title}
-        {props.required && <span className='text-red'> *</span>}
-      </label>
+      {!noLabel && (
+        <label htmlFor={props.input.id}>
+          {props.title}
+          {props.required && <span className='text-red'> *</span>}
+        </label>
+      )}
       <div className='input-wrapper' >
         <input 
           ref={props.inputRef} 
@@ -44,6 +49,7 @@ export default function FormInput({...props}:IFormInput) {
           onFocus={()=> props.autoFocus && setFocus(true)}
           data-focused={focus.toString()}
           data-show-error={props.showError}
+          disabled={props.disabled}
           {...props.input} 
           type={type} 
         />

@@ -2,24 +2,26 @@ import { MutableRefObject, forwardRef, useImperativeHandle, useRef, useState } f
 import './contact.bar.components.desktop.css';
 import './contact.bar.components.movil.css';
 import { IPanel } from '../panel/panel.component';
-import ChatCard from './chat.card.component';
+import ChatCard from '../chat_card/chat.card.component';
 import { IChatModel } from '../../../../models/ChatModel';
 import useActiveChats from '../../../../hooks/useActiveChats';
 import UserService from '../../../../services/UserService/UserService';
 import notify from '../../../../utils/notify';
-import ContactLoader from './contact.loader.component';
+import ContactLoader from '../contact_loader/contact.loader.component';
 import IUserDTO from '../../../../models/UserModel';
-import SearchedUserCard from './search.card.component';
+import UserCard from '../user_card/user.card.component';
 import ChatService from '../../../../services/ChatService/chat.service';
+import ChatGroupModal, { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal';
 
 interface IContactBarProps {
   panelRef?: MutableRefObject<IPanel>
   currentUserGUID: string;
 }
-
 export interface IContactBar {
   activeItem: IChatModel;
 }
+
+type SearchInput = HTMLInputElement | null;
 
 const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
   const [activeItem, setActiveItem] = useState({} as IChatModel);
@@ -27,7 +29,8 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
   const [searchedUsers, setSearchedUsers] = useState<IUserDTO[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isLoading, setIsloading] = useState<boolean>(true);
-  const searchInputRef:MutableRefObject<HTMLInputElement|null> = useRef(null);
+  const chatGroupRef: MutableRefObject<IChatGroupModalExport | null> = useRef(null);
+  const searchInputRef:MutableRefObject<SearchInput> = useRef(null);
   const { currentUserGUID } = props;
 
   const isActive = (id:string) : 'active'|'' => {
@@ -92,7 +95,8 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
       searchInputRef.current.value = '';
     }
   }
-
+  
+ 
   useImperativeHandle(ref, () : IContactBar =>({
     activeItem,
   }));
@@ -103,65 +107,76 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
   },[]);
 
   return (
-    <div className="contactbar">
-      <div className="contactbar-header">
-        <div className="contactbar-options">
-          <h1>Chats</h1>
-          <div className='new-msg'>
-            <i className="ri-quill-pen-line"></i>
+    <>
+      <div className="contactbar">
+        <div className="contactbar-header">
+          <div className="contactbar-options">
+            <h1>Chats</h1>
+            <div 
+              className='new-msg' 
+              title="Crear un nuevo grupo" 
+              onClick={()=> chatGroupRef.current?.ModalInit()}
+            >
+              <i className="ri-add-line"></i>
+              <i className="ri-group-fill"></i>
+            </div>
+          </div>
+          <div className="contactbar-search">
+            <span className="ri-search-line icon"></span>
+            <input 
+              type="text" 
+              ref={searchInputRef}  
+              onChange={handleSearch} 
+              placeholder='Busca un chat o inicia uno nuevo.' 
+            />
+            {isSearching && (<span className='close-search ri-close-line' onClick={()=> clearSearch()}></span>)}
           </div>
         </div>
-        <div className="contactbar-search">
-          <span className="ri-search-line icon"></span>
-          <input 
-            type="text" 
-            ref={searchInputRef}  
-            onChange={handleSearch} 
-            placeholder='Busca un chat o inicia uno nuevo.' 
-          />
-          {isSearching && (<span className='close-search ri-close-line' onClick={()=> clearSearch()}></span>)}
+        <div className="contactbar-body">
+          <ContactLoader isLoading={isLoading}>
+            {isSearching ? (
+              searchedUsers.length > 0 ? (
+                searchedUsers.map((item, index)=>(
+                  <UserCard 
+                    key={index}
+                    user={item}
+                    operation={(base64)=> accessChat(item, base64)}
+                  />
+                ))
+              ) : (
+                <div className='text-center rounded-15 h-100 align-center'>
+                  <p>Sin resultados</p>
+                </div>
+              )
+            ) : (
+              activeChats.length > 0 ? (
+                activeChats.map((item, index) => (
+                  <ChatCard 
+                    key={index}
+                    users={item.users}
+                    nombre={item.name}
+                    ultimoMensaje=""
+                    admin={item.groupAdmin} 
+                    active={isActive(item._id)}
+                    isGroupChat={item.isGroupChat}
+                    currentUserGUID={currentUserGUID}
+                    operation={(base64) => handleActiveItem(item, base64)}
+                  />
+                ))
+              ) : (
+                <div className='text-center rounded-15 h-100 align-center'>
+                  <p>Por el momento no tienes <br /> conversaciones</p>
+                </div>
+              )  
+            )}
+          </ContactLoader>
         </div>
       </div>
-      <div className="contactbar-body">
-        <ContactLoader isLoading={isLoading}>
-          {isSearching ? (
-            searchedUsers.length > 0 ? (
-              searchedUsers.map((item, index)=>(
-                <SearchedUserCard 
-                  key={index}
-                  user={item}
-                  operation={(base64)=> accessChat(item, base64)}
-                />
-              ))
-            ) : (
-              <div className='text-center rounded-15 h-100 align-center'>
-                <p>Sin resultados</p>
-              </div>
-            )
-          ) : (
-            activeChats.length > 0 ? (
-              activeChats.map((item, index) => (
-                <ChatCard 
-                  key={index}
-                  users={item.users}
-                  nombre={item.name}
-                  active={isActive(item._id)}
-                  isGroupChat={item.isGroupChat}
-                  operation={(base64) => handleActiveItem(item, base64)}
-                  ultimoMensaje=""
-                  currentUserGUID={currentUserGUID}
-                  admin={item.groupAdmin} 
-                />
-              ))
-            ) : (
-              <div className='text-center rounded-15 h-100 align-center'>
-                <p>Por el momento no tienes <br /> conversaciones</p>
-              </div>
-            )  
-          )}
-        </ContactLoader>
-      </div>
-    </div>
+      <ChatGroupModal 
+        ref={chatGroupRef} 
+        panelRef={props.panelRef} 
+      />
+    </>
   )
 });
 

@@ -21,6 +21,8 @@ export default function ContactLoader(props:IContactLoader){
           <Skeleton height='70px' className="rounded-15" startColor="gray.50" endColor="gray.200" />
           <Skeleton height='70px' className="rounded-15" startColor="gray.50" endColor="gray.200" />
           <Skeleton height='70px' className="rounded-15" startColor="gray.50" endColor="gray.200" />
+          <Skeleton height='70px' className="rounded-15" startColor="gray.50" endColor="gray.200" />
+          <Skeleton height='70px' className="rounded-15" startColor="gray.50" endColor="gray.200" />
         </Stack>
       ) :(
         props.children

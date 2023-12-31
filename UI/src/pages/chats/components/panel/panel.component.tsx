@@ -24,6 +24,13 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
   const [activeItem, setActiveItem] = useState({} as IChatModel);
   const [image, setImage] = useState<string>('');
   const textInputRef = useRef<HTMLInputElement>(null);
+  const chatName = () => {
+    if(activeItem.isGroupChat){
+      return activeItem.name;
+    }
+    const destinatario = activeItem.users.find(m => m.guid !== props.currentUserGUID)!;
+    return `${destinatario.nombre} ${destinatario?.apellido}`;
+  }
 
   useImperativeHandle(ref, () : IPanel =>({
     setPanelOpen,
@@ -36,7 +43,6 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     if(panelOpen){ textInputRef?.current?.focus(); }
   },[activeItem]);
 
-
   return(
     <>
     {panelOpen ? (
@@ -45,7 +51,7 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
           <div className='info-container'>
             <img src={image} alt="" />
             <div className="info-body">
-              <h1>{activeItem.name}</h1>
+              <h1 title={chatName()}>{chatName()}</h1>
               <p>últ. vez hoy a la(s) 6:24 p.m.</p>
             </div>
           </div>

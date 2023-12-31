@@ -52,69 +52,22 @@
 
 .contactbar .contactbar-header .contactbar-options .new-msg {
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 14px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--gray-white);
-  color: var(--blue400);
-  width: 40px;
-  height: 40px;
+  background-color: var(--blue400);
+  color: var(--pure);
+  width: 44px;
+  height: 34px;
+  text-align: center;
+  padding-right: 0.3rem;
+  transition: all 0.3s ease-in-out;
 }
 
 .contactbar .contactbar-header .contactbar-options .new-msg:hover {
-  opacity: 0.5;
-}
-
-/**********************
-  Search Input
-**********************/
-.contactbar .contactbar-header .contactbar-search {
-  grid-area: contactbar_search;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0rem 1rem;
-  position: relative;
-}
-
-.contactbar .contactbar-header .contactbar-search .icon {
-  position: absolute;
-  top: 50%;
-  left: 25px; /* Ajusta la posición del icono según lo necesites */
-  transform: translateY(-50%);
-  font-size: 14px;
-  padding-bottom: 3.5px;
-  color: var(--gray);
-}
-
-.contactbar .contactbar-header .contactbar-search input {
-  padding: 0.5rem 0.5rem 0.5rem 30px;
-  border-radius: 10px;
-  border: 0;
-  outline: none;
-  width: 100%;
-  background-color: var(--gray-white);
-  border-bottom: 2px solid var(--gray-light);
-}
-
-.contactbar .contactbar-header .contactbar-search input:focus {
-  border-bottom: 3px solid var(--blue300);
-}
-
-.contactbar .contactbar-header .contactbar-search .close-search {
-  position: absolute;
-  top: 50%;
-  right: 25px; /* Ajusta la posición del icono según lo necesites */
-  transform: translateY(-50%);
-  font-size: 20px;
-  padding-bottom: 3.5px;
-  color: var(--gray);
-  cursor: pointer;
-}
-.contactbar .contactbar-header .contactbar-search .close-search:hover {
-  color: var(--gray-loyal) !important;
+  background-color: var(--blue600);
 }
 
 .contactbar .contactbar-body {
@@ -124,56 +77,4 @@
 }
 
 
-/**********************************************
-  Contact ITEM
-***********************************************/
-
-.contactbar .contactbar-body .contact-item {
-  border-radius: 15px;
-  height: 70px;
-  width: 100%;
-  display:flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 0.5rem;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-.contactbar .contactbar-body .contact-item:hover { 
-  background-color: var(--blue50);
-}
-
-.contactbar .contactbar-body .contact-item.active {
-  background-color: var(--blue100) !important;
-}
-
-.contactbar .contactbar-body .contact-item img {
-  height: 50px;
-  width: 50px;
-  border-radius: 50%;
-  object-fit:cover;
-  object-position: center;
-  background-color: var(--gray);
-}
-
-.contactbar .contactbar-body .contact-item .contact-item-info {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.contactbar .contactbar-body .contact-item .contact-item-info h1 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--blue700);
-  margin: 0;
-  padding: 0 0 0rem 0;
-}
-
-.contactbar .contactbar-body .contact-item .contact-item-info p {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--blue800); /* #333333; */
-}
 

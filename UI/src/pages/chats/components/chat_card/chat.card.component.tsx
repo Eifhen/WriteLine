@@ -43,7 +43,7 @@ export default function ChatCard(props:IContactCard){
       }
       msg = `~ ${adminFullName} te ha agregado a este grupo`;
     } else if (ultimoMensaje === '' && !isGroupChat) {
-      msg = `~ Has iniciado una conversación con ${props.nombre}`;
+      msg = `~ Has iniciado una conversación con ${chatName()}`;
     }
     return (
       <p className="text-italic" title={msg}>
@@ -52,11 +52,19 @@ export default function ChatCard(props:IContactCard){
     );
   }
 
+  const chatName = () => {
+    if(isGroupChat){
+      return props.nombre;
+    }
+    const destinatario = users.find(m => m.guid !== currentUserGUID)!;
+    return `${destinatario.nombre} ${destinatario?.apellido}`;
+  }
+
   return (
     <div className={`contact-item ${props.active}`} onClick={()=> props.operation(image)}>
       <img src={image}  alt="" />
       <div className='contact-item-info'>
-        <h1 title={props.nombre}>{props.nombre}</h1>
+        <h1 title={chatName()}>{chatName()}</h1>
         {renderMsg()}        
       </div>
     </div>

@@ -5,7 +5,7 @@ import IUserDTO from "../DTO/user.dto";
 
 
 export default interface IUserService {
-  GetAllUsers(request:WriteLineRequest): Promise<IResponseHandler<IUserModel[]>>;
+  GetAllUsers(request:WriteLineRequest): Promise<IResponseHandler<IUserDTO[]>>;
   GetUsersByQuery(request:WriteLineRequest): Promise<IResponseHandler<IUserDTO[]>>;
   GetUser(id:string):  Promise<IResponseHandler<IUserDTO>>;
   GetUsersById(ids:string[]) : Promise<IUserModel[]>;
