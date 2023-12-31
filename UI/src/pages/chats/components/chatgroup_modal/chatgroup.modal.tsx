@@ -163,24 +163,22 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
                 )}
               </div>
             )}
+            <p className="fw-normal fs-1 mt-1 p-0 text-blue600">
+              Selecciona a los participantes del grupo
+            </p>
           </ModalHeader>
-          <ModalBody className={`p-1 pl-2 pr-2 pt-0 ${isLoading && 'disable-click'}`}>
+          <ModalBody className={`pl-2 pr-2 pt-0 pb-1 ${isLoading && 'disable-click'}`}>
               {users.length > 0 ? (
-                <> 
-                  <p className="fw-normal fs-1 mb-1 text-blue600">
-                    Selecciona a los participantes del grupo
-                  </p>
-                  <ContactLoader isLoading={userLoader}>
-                    {users.map((u, index) => (
-                      <UserCard
-                        key={index} 
-                        user={u} 
-                        isActive={isActive(u.guid!)}
-                        operation={()=>handleSelectUser(u)}  
-                      />
-                    ))}
-                  </ContactLoader>
-                </>
+                <ContactLoader isLoading={userLoader}>
+                  {users.map((u, index) => (
+                    <UserCard
+                      key={index} 
+                      user={u} 
+                      isActive={isActive(u.guid!)}
+                      operation={()=>handleSelectUser(u)}  
+                    />
+                  ))}
+                </ContactLoader>
               ) : (
                 <div className='text-center rounded-15 h-100 align-center'>
                   <p>Sin resultados</p>
@@ -198,7 +196,7 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
             />
           </ModalFooter>
         </ModalContent>
-        </form>
+      </form>
     </Modal>
   )
 })
