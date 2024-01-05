@@ -17,7 +17,8 @@ export default interface IChatService {
   AddUsersToGroupChat: (req:WriteLineRequest) => Promise<IResponseHandler<IChatModel>>;
   RemoveUsersFromGroupChat: (req:WriteLineRequest) => Promise<IResponseHandler<IChatModel>>;
   GetAllActiveChats:(req:WriteLineRequest) => Promise<IResponseHandler<IChatModel[]>>;
-  // DeleteGroupChat: (req:WriteLineRequest) => Promise<IResponseHandler<string>>;
+  UpdateGroupChat: (req:WriteLineRequest) => Promise<IResponseHandler<IChatModel>>;
+  DeleteGroupChat: (req:WriteLineRequest) => Promise<IResponseHandler<IChatModel>>;
 
   
 }

@@ -93,5 +93,27 @@ ChatController.get("/actives", async (req:WriteLineRequest, res:Response, next:N
   }
 })
 
+//UpdateGroupChat
+ChatController.put("/group/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
+  try {
+    const service = await ChatService.UpdateGroupChat(req);
+    res.status(200).json(service);
+  }
+  catch(err){
+    next(err);
+  }
+})
+
+//DeleteGroupChat
+ChatController.delete("/group/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
+  try {
+    const service = await ChatService.DeleteGroupChat(req);
+    res.status(200).json(service);
+  }
+  catch(err){
+    next(err);
+  }
+})
+
 
 export default ChatController;

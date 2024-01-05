@@ -12,3 +12,10 @@ export interface IChatModel {
   creationDate: Date;
   users: IUserDTO[];
 }
+
+
+export interface IGroupChatDTO {
+  idGroup?:string;
+  name:string;
+  idUsers: string[];
+}

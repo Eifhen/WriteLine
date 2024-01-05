@@ -11,14 +11,19 @@ import ContactLoader from '../contact_loader/contact.loader.component';
 import IUserDTO from '../../../../models/UserModel';
 import UserCard from '../user_card/user.card.component';
 import ChatService from '../../../../services/ChatService/chat.service';
-import ChatGroupModal, { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal';
+import { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal';
 
 interface IContactBarProps {
   panelRef?: MutableRefObject<IPanel>
+  chatGroupRef?:MutableRefObject<IChatGroupModalExport>
   currentUserGUID: string;
 }
 export interface IContactBar {
   activeItem: IChatModel;
+  setActiveItem: React.Dispatch<React.SetStateAction<IChatModel>>;
+  setActiveChats: React.Dispatch<React.SetStateAction<IChatModel[]>>;
+  activeChats: IChatModel[];
+  handleActiveItem: (item: IChatModel, base64: string) => void;
 }
 
 type SearchInput = HTMLInputElement | null;
@@ -29,7 +34,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
   const [searchedUsers, setSearchedUsers] = useState<IUserDTO[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isLoading, setIsloading] = useState<boolean>(true);
-  const chatGroupRef: MutableRefObject<IChatGroupModalExport | null> = useRef(null);
+  
   const searchInputRef:MutableRefObject<SearchInput> = useRef(null);
   const { currentUserGUID } = props;
 
@@ -99,6 +104,10 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
  
   useImperativeHandle(ref, () : IContactBar =>({
     activeItem,
+    setActiveItem,
+    activeChats,
+    setActiveChats,
+    handleActiveItem,
   }));
 
   useActiveChats((chats)=>{
@@ -115,7 +124,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
             <div 
               className='new-msg' 
               title="Crear un nuevo grupo" 
-              onClick={()=> chatGroupRef.current?.ModalInit()}
+              onClick={()=> props?.chatGroupRef?.current?.ModalInit()}
             >
               <i className="ri-add-line"></i>
               <i className="ri-group-fill"></i>
@@ -172,10 +181,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
           </ContactLoader>
         </div>
       </div>
-      <ChatGroupModal 
-        ref={chatGroupRef} 
-        panelRef={props.panelRef} 
-      />
+     
     </>
   )
 });

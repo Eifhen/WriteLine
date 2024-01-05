@@ -184,10 +184,16 @@ class ChatServices implements IChatService {
           for(var id of group.idUsers ){
              const user = await UserModel.findById(id);
              if(user){
-               chat.users.push(user);
+              const find = chat.users.find(m => m._id.toString() === user._id.toString());
+              if(!find){
+                chat.users.push(user);
+              }
+              else {
+                throw ErrorHandler(CodigoHTTP.NotFound, `El usuario ya se encuentra en el grupo`, __filename);
+              }
              }
              else {
-              throw ErrorHandler(CodigoHTTP.NotFound, `El usuario ID ${id} no existe.`, __filename);
+              throw ErrorHandler(CodigoHTTP.NotFound, `El usuario no existe.`, __filename);
              }
           }
           const updatedChat = await chat.save();
@@ -266,6 +272,51 @@ class ChatServices implements IChatService {
       });
 
       return ResponseHandler<IChatModel[]>(chats, MensajeHTTP.OK);
+    }
+    catch(err:any){
+      throw ErrorHandler(err.status, err.message, err.path);
+    }
+  }
+
+  async UpdateGroupChat(req:WriteLineRequest) : Promise<IResponseHandler<IChatModel>>{
+    try {
+      const idChat = req.params.id!;
+      const group:IGroupChatDTO = req.body;
+      
+      const { isValid, errors } = validateGroupChatDTO(group);
+      if(isValid){
+        const chat = await ChatModel.findOne({_id: idChat, isGroupChat: true});
+        if(chat){
+          const usersIds:Types.ObjectId[] = group.idUsers.map(id => new Types.ObjectId(id));
+          const usersPromises = usersIds.map(id => UserModel.findById(id).select('-password'));
+          const users = await Promise.all(usersPromises);
+          
+          chat.name = group.name;
+          chat.users = users.filter(user => user !== null) as IUserModel[];
+
+          const updatedChat = await chat.save();
+          await updatedChat.populate("users", "-password");
+          await updatedChat.populate("groupAdmin", "-password");
+
+          return ResponseHandler(updatedChat, MensajeHTTP.Deleted);
+        }
+        throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
+      }
+      throw ErrorHandler(CodigoHTTP.NotFound, errors, __filename);
+    }
+    catch(err:any){
+      throw ErrorHandler(err.status, err.message, err.path);
+    }
+  }
+
+  async DeleteGroupChat(req:WriteLineRequest) : Promise<IResponseHandler<IChatModel>>{
+    try {
+      const idChat = req.params.id!;
+      const deletedChat:IChatModel | null = await ChatModel.findOneAndDelete({_id: idChat}).lean().exec();
+      if(deletedChat){
+        return ResponseHandler<IChatModel>(deletedChat, MensajeHTTP.Deleted);
+      }
+      throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
     }
     catch(err:any){
       throw ErrorHandler(err.status, err.message, err.path);

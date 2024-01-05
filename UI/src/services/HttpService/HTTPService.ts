@@ -87,7 +87,7 @@ class HTTPService {
     });
   }
 
-  Post<t>(url: any, data: any): Promise<t> {
+  Post<t>(url: any, data?: any): Promise<t> {
     return new Promise<t>((resolve, reject) => {
       this.axiosInstance
         .post(this.GetUrl(url), data)

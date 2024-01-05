@@ -19,7 +19,7 @@ fieldset.forminput input {
 
 fieldset.forminput input:invalid[data-focused="true"],
 fieldset.forminput input[data-show-error="true"]:invalid {
-  border-color: var(--wine);
+  border-color: var(--wine) !important;
 }
 
 fieldset.forminput input:valid[data-focused="true"] {

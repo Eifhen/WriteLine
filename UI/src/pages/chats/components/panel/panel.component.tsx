@@ -5,6 +5,8 @@ import './panel.component.desktop.css';
 import './panel.component.movil.css';
 import IUserDTO from '../../../../models/UserModel';
 import { IChatModel } from '../../../../models/ChatModel';
+import ChatGroupModalEdit, { IChatGroupModalEditExport } from '../chatgroup_modal/chatgroup.modal.edit';
+import { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal';
 
 
 interface IPanelProps {
@@ -24,12 +26,21 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
   const [activeItem, setActiveItem] = useState({} as IChatModel);
   const [image, setImage] = useState<string>('');
   const textInputRef = useRef<HTMLInputElement>(null);
+  const editGroupModalRef= useRef({} as IChatGroupModalEditExport); 
+
   const chatName = () => {
     if(activeItem.isGroupChat){
       return activeItem.name;
     }
     const destinatario = activeItem.users.find(m => m.guid !== props.currentUserGUID)!;
     return `${destinatario.nombre} ${destinatario?.apellido}`;
+  }
+
+  const subTitle = () => {
+    if(activeItem.isGroupChat){
+      return activeItem.users.map(m => `${m.nombre} ${m.apellido}`).join(", ");
+    }
+    return "últ. vez hoy a la(s) 6:24 p.m."
   }
 
   useImperativeHandle(ref, () : IPanel =>({
@@ -48,11 +59,11 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     {panelOpen ? (
       <div className='panel'>
         <div className="panel-header">
-          <div className='info-container'>
+          <div className='info-container' onClick={()=> editGroupModalRef.current.ModalInit(activeItem)}>
             <img src={image} alt="" />
             <div className="info-body">
               <h1 title={chatName()}>{chatName()}</h1>
-              <p>últ. vez hoy a la(s) 6:24 p.m.</p>
+              <p title={subTitle()} className='text-trucante w-800px text-blue800 '>{subTitle()}</p>
             </div>
           </div>
         </div>
@@ -71,6 +82,15 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
             <i className="ri-send-plane-2-fill"></i>
           </button>
         </div>
+        <ChatGroupModalEdit 
+          ref={editGroupModalRef} 
+          item={activeItem} 
+          setItem={setActiveItem} 
+          chatName={chatName()} 
+          setPanelOpen={setPanelOpen}
+          contactItemRef={props.contactItemRef}
+          currentUserGUID={props.currentUserGUID}
+        />
       </div>
     ) : (
       <Logo 

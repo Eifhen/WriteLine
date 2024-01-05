@@ -25,9 +25,8 @@ export default function ActiveBar (props:IActiveBar) {
     setIsloading(true);
     setDisable(true);
     AutenticationService.LogOut(()=>{
-      notify("Has cerrado sesión", "success", ()=> {
-        navigate("home");
-      });
+      notify("Has cerrado sesión", "success");
+      navigate("home");
     })
   }
 
