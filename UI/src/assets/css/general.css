@@ -4,6 +4,8 @@
 
 :root {
   --wine:rgb(247, 10, 61);
+  --red: #dc3545;
+  --red-palid: #f8d7da;
   --dark:rgb(6, 24, 34);
   --darker:rgb(2, 9, 12);
   --night: #444E5C;
@@ -21,6 +23,7 @@
   --blue-royal:#194a8d;
   --yellow:#fecf6a;
   --green:#27AE60 ;
+  --green-cake: #b9f5d0;
   --green-leaf:#71AE21;
 
   --blue950: #0b2546; 
@@ -40,7 +43,8 @@
   
   --green-transparent-gradient:linear-gradient(1.7deg, rgba(39,174,96,1) 5.1%, rgba(59,55,128,0.00) 96.1%);
   --blue-gradient: linear-gradient( 179.3deg, #f6f6f6 68.1%, rgba(63,160,241,1) 126.9% );
-  --blue-gradient-2: linear-gradient( 179.3deg, #f6f6f6 68.1%, rgba(63,160,241,1) 146.9% );
+  --blue-gradient-2: linear-gradient( 179.3deg, #ffffff 76%, rgba(63,160,241,1) 126.9% );
+  --blue-gradient-3: linear-gradient( 179.3deg, #ffffff 86%, rgba(63,160,241,1) 126.9% );
   --night-gradient: linear-gradient(90deg, rgba(14,43,55,1) 0%, rgba(8,32,42,1) 12%, rgba(11,11,11,1) 100%);
   --orange-gradient: linear-gradient(90deg, rgba(251,225,141,1) 0%, rgba(254,151,0,1) 64%, rgba(238,141,0,1) 99%);
   --shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
@@ -105,6 +109,7 @@ a:hover { opacity: 0.5; }
 /* -------- [ Padding ] ------- */
 
 .p-0 { padding: 0 !important;}
+.p-0-4 { padding:0.4rem !important;}
 .p-0-5 { padding:0.5rem !important;}
 .p-1 { padding:1rem !important;}
 .p-2 { padding:2rem !important;}
@@ -150,6 +155,7 @@ a:hover { opacity: 0.5; }
 .pr-4 { padding-right:4rem !important;}
 
 .pl-0 { padding-left:0rem !important; }
+.pl-0-4 { padding-left:0.4rem !important; }
 .pl-0-5 { padding-left:0.5rem !important; }
 .pl-1 { padding-left:1rem !important;}
 .pl-1-5 { padding-left:1.5rem !important; }
@@ -179,6 +185,9 @@ a:hover { opacity: 0.5; }
 .mt-2 { margin-top:2rem !important; }
 .mt-3 { margin-top:3rem !important; }
 .mt-4 { margin-top:4rem !important; }
+
+.mt-10px { margin-top: 10px !important; }
+.mt-3px { margin-top: 3px !important; }
 
 .mb-0 { margin-bottom:0 !important; }
 .mb-0-1{ margin-bottom: 0.1rem !important; }
@@ -240,7 +249,7 @@ a:hover { opacity: 0.5; }
 .align-items-start { align-items: start; }
 
 .align-self-center { align-self: center;}
-.align-self-end { align-self: end;}
+.align-self-end { align-self: flex-end;}
 
 
 .align-center {
@@ -308,10 +317,10 @@ a:hover { opacity: 0.5; }
 
 .text-decoration-none { text-decoration: none; }
 
-.text-red { color: red !important; }
 .text-white { color:white !important; }
 .text-dark { color: var(--dark) !important; }
 .text-wine { color:var(--wine) !important; }
+.text-red { color: var(--red) !important; }
 .text-blue { color: var(--blue) !important; }
 .text-gray { color: whitesmoke !important;}
 .text-gray-loyal { color: var(--gray-loyal) !important; }
@@ -363,6 +372,7 @@ a:hover { opacity: 0.5; }
 .fw-medium { font-weight: 500 !important;}
 .fw-thin { font-weight: 400;}
 
+.fs-10px { font-size: 10px !important; }
 .fs-small { font-size: 12px !important; }
 .fs-smaller { font-size: 13px !important; }
 .fs-1 { font-size:1rem !important; }
@@ -399,12 +409,23 @@ a:hover { opacity: 0.5; }
   font-family: 'Raleway', sans-serif !important;
 }
 
+/* -------- [ Letter Spacing ] ------- */
+
+.ls-1 { letter-spacing: 1; }
+.ls-1px { letter-spacing: 1px !important; }
+.ls-2px { letter-spacing: 2px !important; }
+.ls-4px { letter-spacing: 4px !important; }
+
+
+
 /* -------- [ Background ] ------- */
 
 .bg-inherit { background-color: inherit !important;}
 
 .bg-dark { background: var(--dark); }
 .bg-wine { background: var(--wine); }
+.bg-red { background-color: var(--red);}
+.bg-red-palid { background-color: var(--red-palid);}
 .bg-orange { background: orange; }
 .bg-gray { background: var(--gray); }
 .bg-white { background: var(--white) !important;}
@@ -416,6 +437,7 @@ a:hover { opacity: 0.5; }
 .bg-blue-royal { background:var(--blue-royal); }
 .bg-blue {background:var(--blue); }
 .bg-green {background:var(--green) ;}
+.bg-green-cake {background:var(--green-cake) ;}
 
 .bg-blue950 { background-color: var(--blue950) !important; }
 .bg-blue900 { background-color: var(--blue900) !important; }
@@ -432,6 +454,7 @@ a:hover { opacity: 0.5; }
 .bg-gray-white { background-color: var(--gray-white) !important;}
 
 .bg-writeline {   background-image: var(--blue-gradient-2) !important;} 
+.bg-writeline-2 {   background-image: var(--blue-gradient-3) !important;} 
 
 /* -------- [ ICON Background ] ------- */
 .fill-dark { fill: var(--dark) !important; }
@@ -555,9 +578,10 @@ a:hover { opacity: 0.5; }
 .border-top-4px { border-top: solid 4px var(--gray-loyal) !important;}
 
 .border-bottom { border-bottom: solid 1px var(--gray-loyal) !important;}
-.border-right { border-top: solid 1px var(--gray-loyal) !important;}
-.border-left { border-top: solid 1px var(--gray-loyal) !important;}
+.border-right { border-right: solid 1px var(--gray-loyal) !important;}
+.border-left { border-left: solid 1px var(--gray-loyal) !important;}
 
+.border-left-2px { border-left: solid 2px var(--gray-loyal);}
 .border-left-1 { border-left: solid 4px var(--gray-loyal);}
 
 .border-left-blue400 { border-color: var(--blue400); }
@@ -566,13 +590,14 @@ a:hover { opacity: 0.5; }
 .border-1 { border: solid 0.2rem !important; }
 .border-2 { border: solid 2rem !important; }
 
-.border-dark { border-color: black !important; }
-.border-gray { border-color: var(--gray-loyal) !important; }
 
 .border-bottom { border-bottom: solid 0.5rem white; }
 .border-bottom-2px { border-bottom: solid 2px  var(--gray-loyal) !important; }
 .border-bottom-1 { border-bottom: solid 4px  var(--gray-loyal) !important; }
 
+.border-dark { border-color: black !important; }
+.border-gray { border-color: var(--gray-loyal) !important; }
+.border-red { border-color: var(--red) !important; }
 
 /* -------- [ Pointer ] ------- */
 
@@ -637,7 +662,12 @@ a:hover { opacity: 0.5; }
 .h-150px {height: 150px; }
 .h-160px {height: 160px; }
 .h-170px {height: 170px; }
-
+.h-180px {height: 180px; }
+.h-190px {height: 190px; }
+.h-200px {height: 200px; }
+.h-300px {height: 300px; }
+.h-400px {height: 400px; }
+.h-500px {height: 500px; }
 .h-800px {height: 800px; }
 .h-900px {height: 900px }
 .h-940px {height: 940px }
@@ -704,6 +734,10 @@ a:hover { opacity: 0.5; }
 
 .overflow-hidden {
   overflow: hidden !important;
+}
+
+.overflow-y-auto {
+  overflow-y: auto !important;
 }
 
 .loader-container {
@@ -773,7 +807,7 @@ a:hover { opacity: 0.5; }
   background-color: var(--blue400);
 }
 .notify .notify-content.warning {
-  background-color: var(--yellow2);
+  background-color: orange;
 }
 .notify .notify-content.error {
   background-color: var(--wine);

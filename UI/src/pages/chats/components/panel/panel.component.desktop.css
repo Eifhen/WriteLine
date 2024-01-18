@@ -72,7 +72,10 @@
 .panel .panel-body {
   grid-area: panel_body;
   background-color: var(--gray-white);
+  
 }
+
+
 
 
 .panel .panel-footer {
@@ -104,6 +107,22 @@
   padding: 0 1rem;
   border-radius: 25px;
   background-color: var(--blue100);
+}
+
+.panel .panel-footer .message-area input:invalid,
+.panel .panel-footer .message-area textarea:invalid {
+  border: 3px solid var(--blue300);
+}
+
+.panel .panel-footer .message-area input:focus,
+.panel .panel-footer .message-area textarea:focus {
+  border: none;
+}
+
+.panel .panel-footer .message-area input:disabled,
+.panel .panel-footer .message-area textarea:disabled {
+  border: 3px solid var(--blue200);
+  opacity: 0.5;
 }
 
 .panel .panel-footer .send-btn {

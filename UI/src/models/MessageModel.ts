@@ -7,3 +7,8 @@ export default interface IMessageModel {
   chat: IChatModel;
   date: Date;
 }
+
+export interface IMessageDTO {
+  idChat:string;
+  message:string;
+}

@@ -164,7 +164,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
                     key={index}
                     users={item.users}
                     nombre={item.name}
-                    ultimoMensaje=""
+                    ultimoMensaje={item.latestMessage?.content ?? ""}
                     admin={item.groupAdmin} 
                     active={isActive(item._id)}
                     isGroupChat={item.isGroupChat}

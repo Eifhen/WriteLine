@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import useGetUserImageByGUID from "../../../../hooks/useUserImage";
 import IUserDTO from "../../../../models/UserModel";
 import GroupChatIcon from '../../../../assets/images/group_chat_transparent.png';
 import UserIcon from '../../../../assets/images/user_icon2.png';
 import UserService from "../../../../services/UserService/UserService";
-import { IChatModel } from "../../../../models/ChatModel";
 
 interface IContactCard {
   admin?:IUserDTO;

@@ -44,8 +44,7 @@
   .signup-page .signup-page-body .signup-card {
     background-color: var(--pure);
     width: 94vw;
-    height: auto !important;
-    margin: auto;
+   
     box-shadow: var(--shadow);
     border-radius: 15px;
     display: grid;
@@ -58,7 +57,7 @@
     ;
     grid-template-rows: 
       300px 
-      max-content
+      auto
     ;
   }
 
@@ -72,18 +71,19 @@
   }
 
   .signup-page .signup-page-body .signup-card .signup-card-form {
-    height: auto;
     padding: 1rem 2rem;
   }
 
   .signup-page .signup-page-body .signup-card .signup-card-form form {
-    height: auto;
-    padding-bottom: 2rem;
+    
+    /* padding-bottom: 2rem; */
   }
 
   .signup-page .signup-page-body .signup-card .signup-card-form form h1 {
     padding: 1rem 0rem 1.5rem 0rem !important;  
   }
+
+ 
 
 }
 
@@ -99,7 +99,6 @@
   }
    
   .signup-page .signup-page-body .signup-card .signup-card-form form {
-    height: auto;
     width: 100%;
     padding-bottom: 0rem;
   }
@@ -112,6 +111,10 @@
     position: relative;
     margin-top: 2rem;
     width: 100%;
+  }
+
+  .signup-title-container h1 {
+    font-size: 1.2rem !important;
   }
 
 }

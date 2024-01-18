@@ -3,7 +3,6 @@ import { MutableRefObject, forwardRef, useEffect, useImperativeHandle, useRef, u
 import FormInput from "../../../../components/FormInput/forminput.component";
 import ContactLoader from "../contact_loader/contact.loader.component";
 import WritelineButton   from '../../../../components/Button/Button.component';
-import { IChatGroupModalExport } from "./chatgroup.modal";
 import UserService from "../../../../services/UserService/UserService";
 import notify from "../../../../utils/notify";
 import CloseIcon from "../../../../components/closeIcon/closeIcon.component";
@@ -19,8 +18,8 @@ import ChatService from "../../../../services/ChatService/chat.service";
 import stringValidation from "../../../../utils/stringValidation";
 import { IContactBar } from "../contacts/contact.bar.component";
 import GroupChatImg from '../../../../assets/images/group_chat_transparent.png';
-import GroupChatIcon from "../../../../components/groupChatIcon/groupIcon";
-import UserIcon from '../../../../assets/images/user_icon2.png';
+import UserTags from "../../../../components/UserTags/userTags.component";
+import { IPanel } from "../panel/panel.component";
 
 export interface IChatGroupModalEditExport {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,15 +28,18 @@ export interface IChatGroupModalEditExport {
 
 
 export interface IChatGroupModalEditProps { 
-  item: IChatModel;
-  chatName:string;
-  setItem: React.Dispatch<React.SetStateAction<IChatModel>>;
+  // item: IChatModel;
+  // chatName:() => string;
+  // setItem: React.Dispatch<React.SetStateAction<IChatModel>>;
+  // setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  // getImage: (guid:string) => string;
   contactItemRef?:MutableRefObject<IContactBar>;
-  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  panelRef: MutableRefObject<IPanel>;
   currentUserGUID: string;
 }
 
 const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
+  console.log("panel ref =>", props.panelRef.current);
 
   const [modal, setModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -45,16 +47,17 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
   const [userLoader, setUserLoader] = useState<boolean>(true);
   const [inputReadOnly, setInputReadOnly] = useState<boolean>(true);
   const [removedUsers, setRemovedUsers] = useState<IUserDTO[]>([]);
-  const [currentUsers, setCurrentUsers] = useState<IUserDTO[]>(props.item.users);
+  const [currentUsers, setCurrentUsers] = useState<IUserDTO[]>(props.panelRef?.current.activeItem?.users ?? []);
   const [isAddingUser, setIsAddingUser] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<IUserDTO[]>([]);
   const [allUsers, setAllUsers] = useState<IUserDTO[]>([]);
-  const [image, setImage] = useState(GroupChatImg);
-  const youAreAdmin = HTTP.GetCurrentUser().data.guid === props.item.groupAdmin?.guid;
-  const isGroupChat = props.item.isGroupChat;
+  const youAreAdmin = HTTP.GetCurrentUser().data.guid === props.panelRef?.current.activeItem?.groupAdmin?.guid;
+  const isGroupChat = props.panelRef?.current?.activeItem?.isGroupChat;
   const destinatario = isGroupChat ? 
-    {} as IUserDTO : 
-    props.item.users.filter(m => m.guid !== props.currentUserGUID)[0];
+  {} as IUserDTO : 
+  props.panelRef?.current?.activeItem?.users.filter(m => m.guid !== props.currentUserGUID)[0]!;
+ 
+  const image = isGroupChat ? GroupChatImg : props?.panelRef?.current?.getImage(destinatario?.guid!);
 
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
   const inputs = useGroupInputs({
@@ -63,7 +66,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
       text-blue700 m-0 p-0 mr-1 border-0 rounded-0 fmly-secondary-font 
       ${inputReadOnly ? '' : 'border-bottom-2px mb-0-4'}
     `,
-    chatName: props.chatName,
+    chatName: props?.panelRef?.current?.chatName() ?? '',
     formInputAttr: {
       fieldClass:`
         title fmly-secondary-font fw-bold w-max-250px 
@@ -142,22 +145,67 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
   const handleSubmit = (event:any) => {
     event.preventDefault();
     setIsLoading(true);
-
-    if(isAddingUser){
-      if(selectedUsers.length > 0){
-        const data:IGroupChatDTO = {
-          idGroup: props.item._id,
-          name: props.item.name,
-          idUsers: selectedUsers.map(m => m._id)
-        } 
-        ChatService.AddUsers(props.item._id, data)
-        .then(res => {
-          setIsAddingUser(false);
-          setCurrentUsers(res.users);
-          setSelectedUsers([]);
-          props.setItem((prev) => {
-            return {...prev, users: res.users}
+    if(props.panelRef?.current.activeItem){
+      if(isAddingUser){
+        if(selectedUsers.length > 0){
+          const data:IGroupChatDTO = {
+            idGroup: props.panelRef?.current?.activeItem._id!,
+            name: props.panelRef?.current?.activeItem.name!,
+            idUsers: selectedUsers.map(m => m._id)
+          } 
+          ChatService.AddUsers(props.panelRef?.current?.activeItem._id, data)
+          .then(res => {
+            setIsAddingUser(false);
+            setCurrentUsers(res.users);
+            setSelectedUsers([]);
+            props?.panelRef?.current?.setActiveItem((prev) => {
+              return {...prev, users: res.users}
+            })
+            props.contactItemRef?.current.setActiveChats((prev)=> {
+              const index = prev.findIndex((m) => m._id === res._id);
+              if (index !== -1) {
+                const updatedChats = [...prev];
+                updatedChats[index] = res; // Reemplaza el chat existente con el actualizado
+                return updatedChats;
+              }
+              return prev;
+            });
+  
+            const msg = selectedUsers.length > 1 ? 
+              "Los usuarios fueron agregados exitosamente." : 
+              "El usuario fue agregado exitosamente"; 
+  
+            notify(msg,"success");
           })
+          .catch(err => {
+            notify(err.message,"error");
+            throw err;
+          })
+          .finally(()=>{
+            //setIsLoading(false);
+            onModalClose();
+          })
+        }
+        else {
+          notify("Debes seleccionar un usuario","warning");
+          setIsLoading(false);
+        }
+      }
+      else {
+        const form = event.target;
+        const formData = Object.fromEntries(new FormData(form).entries());
+        const groupName = stringValidation(formData.groupName, props.panelRef?.current?.activeItem.name);
+       
+        const data:IGroupChatDTO = {
+          idGroup: props.panelRef?.current?.activeItem._id,
+          name: groupName,
+          idUsers: currentUsers.map(m => m._id)
+        };
+  
+        ChatService.UpdateGroup(props.panelRef.current?.activeItem._id, data)
+        .then((res)=> {
+          setCurrentUsers(res.users);
+          props?.panelRef?.current.setActiveItem(res);
           props.contactItemRef?.current.setActiveChats((prev)=> {
             const index = prev.findIndex((m) => m._id === res._id);
             if (index !== -1) {
@@ -166,79 +214,41 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
               return updatedChats;
             }
             return prev;
-          });
-
-          const msg = selectedUsers.length > 1 ? 
-            "Los usuarios fueron agregados exitosamente." : 
-            "El usuario fue agregado exitosamente"; 
-
-          notify(msg,"success");
+          })
+          notify("El chat fue actualizado exitosamente","success");
         })
-        .catch(err => {
-          notify(err.message,"error");
+        .catch((err:any)=> {
+          notify(err.message, "error");
           throw err;
         })
         .finally(()=>{
-          //setIsLoading(false);
           onModalClose();
         })
       }
-      else {
-        notify("Debes seleccionar un usuario","info");
-        setIsLoading(false);
-      }
-    }
-    else {
-      const form = event.target;
-      const formData = Object.fromEntries(new FormData(form).entries());
-      const groupName = stringValidation(formData.groupName, props.item.name);
-     
-      const data:IGroupChatDTO = {
-        idGroup: props.item._id,
-        name: groupName,
-        idUsers: currentUsers.map(m => m._id)
-      };
-
-      ChatService.UpdateGroup(props.item._id, data)
-      .then((res)=> {
-        setCurrentUsers(res.users);
-        props.setItem(res);
-        props.contactItemRef?.current.setActiveChats((prev)=> {
-          const index = prev.findIndex((m) => m._id === res._id);
-          if (index !== -1) {
-            const updatedChats = [...prev];
-            updatedChats[index] = res; // Reemplaza el chat existente con el actualizado
-            return updatedChats;
-          }
-          return prev;
-        })
-        notify("El chat fue actualizado exitosamente","success");
-      })
-      .catch((err:any)=> {
-        notify(err.message, "error");
-        throw err;
-      })
-      .finally(()=>{
-        onModalClose();
-      })
     }
   }
 
   const addMode = () => {
-    setIsAddingUser(true);
-    setUserLoader(true);
-     UserService.GetAllUsers()
-    .then((res:any)=>{
-      const data = Difference<IUserDTO>(res, currentUsers, "guid");
-      setAllUsers(data);
-    })
-    .catch((err:any)=>{
-      notify(err.message, "error");
-      throw err;
-    })
-    .finally(()=>{
-      setUserLoader(false);
-    });
+    if(removedUsers.length === 0){
+      setIsAddingUser(true);
+      setUserLoader(true);
+      setInputReadOnly(true);
+       UserService.GetAllUsers()
+      .then((res:any)=>{
+        const data = Difference<IUserDTO>(res, currentUsers, "guid");
+        setAllUsers(data);
+      })
+      .catch((err:any)=>{
+        notify(err.message, "error");
+        throw err;
+      })
+      .finally(()=>{
+        setUserLoader(false);
+      });
+    }
+    else {
+      notify("Has removido usuarios, guarda los cambios antes de proseguir.","warning");
+    }
   }
 
   const detailMode = () => {
@@ -248,37 +258,23 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
 
   const deleteChat = () => {
     setIsLoading(true);
-    ChatService.DeleteGroup(props.item._id)
-    .then(()=> {
-      props.contactItemRef?.current.setActiveChats((prev)=> {
-        return prev.filter(m => m._id !== props.item._id);
-      });
-      props.setPanelOpen(false);
-    })
-    .catch((err)=>{
-      notify(err.message, "error");
-      throw err;
-    })
-    .finally(()=>{
-      onModalClose();
-    })
+    if(props.panelRef?.current.activeItem){
+      ChatService.DeleteGroup(props.panelRef?.current.activeItem._id)
+      .then(()=> {
+        props.contactItemRef?.current.setActiveChats((prev)=> {
+          return prev.filter(m => m._id !== props.panelRef?.current.activeItem._id);
+        });
+        props.panelRef?.current?.setPanelOpen(false);
+      })
+      .catch((err)=>{
+        notify(err.message, "error");
+        throw err;
+      })
+      .finally(()=>{
+        onModalClose();
+      })
+    }
   }
-
-  useEffect(()=> {
-    if(isGroupChat){
-      setImage(GroupChatImg);
-    }
-    else {
-      UserService.GetUserImage(destinatario.guid!)
-      .then((res:any)=>{
-        setImage(res.data);
-      })
-      .catch((err:any)=>{
-        setImage(UserIcon);
-        throw err.message;
-      })
-    }
-  },[props.item])
 
   useImperativeHandle(ref, () : IChatGroupModalEditExport =>({
     setModal,
@@ -297,16 +293,16 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
       <ModalOverlay />
       <form ref={formRef} onSubmit={handleSubmit} noValidate={true}>
         <ModalContent 
-          height={isGroupChat ? "800px" : "400px" } 
-          className={`rounded-big overflow-hidden ${isGroupChat ? '' : 'bg-writeline'}`}
+          height={isGroupChat ? "800px" : "" } 
+          className={`rounded-big overflow-hidden ${isGroupChat ? '' : ''}`}
         >
           <ModalHeader className=' p-relative'>
             <CloseIcon className="top-0-6" operation={onModalClose} disable={isLoading} />
           </ModalHeader>
-          <ModalBody className={`p-0 ${isLoading && 'disable-click'}`}>
+          <ModalBody className={`p-0  ${isLoading && 'disable-click'}`}>
             {isAddingUser ? (
               <>
-                <div className="border-bottom pl-2 pt-1 pb-1">
+                <div className="pl-2 pt-1 pb-1">
                   <div className="align-y-center text-blue400">
                     <i  onClick={detailMode} className="ri-arrow-left-line fs-1-5 mr-1 pointer hover-fade"></i>
                     <h1 className="fw-bold fs-1-2">
@@ -315,33 +311,11 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                   </div>
                 </div>
                 <div className="pl-2 pr-2 pb-1 pt-1">
-                  {selectedUsers.length > 0 && (
-                    <div className="d-flex pb-0-5 fw-normal">
-                      {selectedUsers.map((u, index)=> {
-                        if(index <= 2) {
-                          return (
-                            <small key={index} title={`${u.nombre} ${u.apellido}`} className="rounded-big p-0-5 pr-1 pl-1 mr-0-5 text-center bg-blue100 fs-smaller w-120px text-truncate">
-                              {u.nombre} {u.apellido}
-                            </small>
-                          )
-                        }
-                      })}
-                      {selectedUsers.length > 3 && (
-                        <small 
-                          className="rounded-big p-0-5 pr-1 pl-1 text-center bg-blue100 align-center w-150px fs-smaller"
-                          title={selectedUsers.map((m, index)=> {
-                            if(index > 2){
-                              return `${m.nombre} ${m.apellido}`;
-                            }
-                            return "";
-                          }).join('\n')}
-                        >
-                          <i className="ri-add-line"></i>
-                          <span className="">{selectedUsers.length - 3} seleccionados</span>
-                        </small>
-                      )}
-                    </div>
-                  )}
+                  <UserTags 
+                    users={selectedUsers} 
+                    showTitle={false}
+                    className="bg-blue100 text-blue800 pl-0-5 fs-10px fw-medium ls-1px" 
+                  />
                   <ContactLoader isLoading={userLoader}>
                     {allUsers.length > 0 ? (
                      <>
@@ -350,14 +324,14 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                           key={index} 
                           user={u}
                           isActive={isActive(u.guid!)}
-                          isAdmin={u.guid === props.item.groupAdmin?.guid} 
+                          isAdmin={u.guid === props.panelRef?.current.activeItem.groupAdmin?.guid} 
                           operation={()=>handleSelectUser(u)}
                         />
                       ))}
                      </>
                     ) : (
-                      <div className="align-center">
-                        <p>Sin Datos</p>
+                      <div className="align-center rounded-big bg-gray-white h-400px">
+                        <p>Por el momento no hay usuarios disponibles</p>
                       </div>
                     )}
                   </ContactLoader> 
@@ -380,53 +354,65 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                           disabled={isLoading ? true : false} 
                           showError={showError}
                           readOnly={ inputReadOnly} 
-                          value={props.chatName}
+                          value={props.panelRef?.current.chatName()}
                           {...input} 
                         />
                       ))}
-                      {isGroupChat && (
+                      {isGroupChat && youAreAdmin && (
                         <EditIcon className="fs-1-2 align-self-end" operation={()=> setInputReadOnly(!inputReadOnly)} />
                       )}
                     </div>
                     <p className="fs-smaller fw-bold fmly-primary-font text-blue400 m-0 p-0 ">
-                      {formatDateToDDMMYYYY(props.item.creationDate, " / ")}
+                      {formatDateToDDMMYYYY(props?.panelRef?.current.activeItem.creationDate!, " / ")}
                     </p>
                   </div>
                 </div>
                 {isGroupChat ? (
                   <>
-                    <div className="pl-2 pr-2  pb-1">
-                      <div className={`contact-item `} onClick={addMode}>
-                        <div className="w-50px h-50px bg-blue400 text-white rounded-circle align-center fs-1-3">
-                          <i className="ri-user-add-line"></i>
+                    <div className="pl-2 pr-2 pb-1">
+                      <h1 className="
+                        fw-bold fs-1 fmly-secondary-font ls-2px 
+                        bg-blue400 text-white text-center w-150px p-0-5 mt-1 mb-1 
+                        rounded-top-right-big rounded-bottom-left-big"
+                      >
+                        Integrantes 
+                      </h1>
+
+                      <UserTags 
+                        users={removedUsers} 
+                        title="Removidos"
+                        showTitle={removedUsers.length > 0}
+                        titleClass="mb-0-5 mt-0-5 ls-1px fs-smaller text-red fw-bold fmly-secondary-font"
+                        className="bg-red-palid text-red pl-0-5 fs-10px fw-medium ls-1px"
+                        containerClass="border-left-2px border-red pl-0-5" 
+                      />
+
+                      {youAreAdmin  && (
+                        <div className={`contact-item `} onClick={addMode}>
+                          <div className="w-50px h-50px bg-blue400 text-white rounded-circle align-center fs-1-3">
+                            <i className="ri-user-add-line"></i>
+                          </div>
+                          <div className='contact-item-info'>
+                            <h1 className="fw-bold text-blue400" title="Añadir Miembros">Añadir Miembros</h1>
+                          </div>
                         </div>
-                        <div className='contact-item-info'>
-                          <h1 className="fw-bold text-blue400" title="Añadir Miembros">Añadir Miembros</h1>
-                        </div>
-                      </div>
+                      )}
                       <div className="mt-0">
-                        <h1 className=" d-none
-                          fw-medium fmly-primary-font fs-1 mb-1 
-                          bg-blue200 text-blue800 pt-0-5 pb-0-5 text-center
-                          rounded-top-left-big rounded-bottom-right-big w-100"
-                        >
-                          Integrantes
-                        </h1>
                         <ContactLoader isLoading={false}>
                           {currentUsers.map((u, index) => (
                             <UserCard
                               key={index} 
                               user={u}
-                              isAdmin={u.guid === props.item.groupAdmin?.guid} 
+                              isAdmin={u.guid === props?.panelRef?.current?.activeItem.groupAdmin?.guid} 
                               removeAction={()=>removeUser(u)} 
-                              allowRemove={youAreAdmin && u.guid != props.item.groupAdmin?.guid} 
+                              allowRemove={youAreAdmin && u.guid != props?.panelRef?.current?.activeItem.groupAdmin?.guid} 
                             />
                           ))}
                         </ContactLoader> 
                       </div>
                     </div>
                     {youAreAdmin && (
-                      <div className="mt-2 mb-1 pl-2 pt-1 pb-1 border-top border-bottom">
+                      <div className="mt-2 mb-1 pl-3 pt-1 pb-1 border-top border-bottom">
                         <h2 onClick={deleteChat} className="trans-all-0-5s hover-fade text-wine fw-bold pointer">
                           <i className="ri-delete-bin-line mr-0-5 fs-1-4"></i>
                           Eliminar Grupo
@@ -463,7 +449,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
               </>
             )}
           </ModalBody>
-          {isGroupChat && (
+          {isGroupChat && (youAreAdmin || isAddingUser) && (
             <ModalFooter className='d-flex justify-end pr-2 pt-0 pb-0-9'>
               <WritelineButton  
                 className="simple bg-blue400 text-white fw-bold rounded-pill mr-0-4" 
@@ -480,6 +466,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
     </Modal>
   )
 })
+
 
 
 ChatGroupModalEdit.displayName = "ChatGroupModalEdit";

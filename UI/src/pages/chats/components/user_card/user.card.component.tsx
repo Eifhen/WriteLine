@@ -1,9 +1,8 @@
 import { useState } from "react";
 import IUserDTO from "../../../../models/UserModel";
 import UserIcon from '../../../../assets/images/user_icon2.png';
-import useGetUserImageByGUID from "../../../../hooks/useUserImage";
+import { useGetUserImageByGUID } from "../../../../hooks/useUserImage";
 import CloseIcon from "../../../../components/closeIcon/closeIcon.component";
-
 
 interface ISearchedUserCard {
   operation?: (base64:string) => void;

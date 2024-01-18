@@ -14,6 +14,7 @@ import { IContactBar } from "../contacts/contact.bar.component";
 import { IGroupChatDTO } from "../../../../models/ChatModel";
 import ChatService from "../../../../services/ChatService/chat.service";
 import CloseIcon from "../../../../components/closeIcon/closeIcon.component";
+import UserTags from "../../../../components/UserTags/userTags.component";
 
 export interface IChatGroupModalExport {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -133,7 +134,7 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
 
   return (
     <Modal 
-      size="xl"
+      size="lg"
       isOpen={modal} 
       isCentered
       onClose={onModalClose}
@@ -157,33 +158,14 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
                 {...input} 
               />
             ))}
-            {selectedUsers.length > 0 && (
-              <div className="mt-1 d-flex fw-normal">
-                {selectedUsers.map((u, index)=> {
-                  if(index <= 2) {
-                    return (
-                      <small key={index} title={`${u.nombre} ${u.apellido}`} className="rounded-big p-0-5 pr-1 pl-1 mr-0-5 text-center bg-blue100 fs-smaller w-120px text-truncate">
-                        {u.nombre} {u.apellido}
-                      </small>
-                    )
-                  }
-                })}
-                {selectedUsers.length > 3 && (
-                  <small 
-                    className="rounded-big p-0-5 pr-1 pl-1 text-center bg-blue100 align-center w-150px fs-smaller"
-                    title={selectedUsers.map((m, index)=> {
-                      if(index > 2){
-                        return `${m.nombre} ${m.apellido}`;
-                      }
-                      return "";
-                    }).join('\n')}
-                  >
-                    <i className="ri-add-line"></i>
-                    <span className="">{selectedUsers.length - 3} seleccionados</span>
-                  </small>
-                )}
-              </div>
-            )}
+           
+            <UserTags 
+              users={selectedUsers} 
+              showTitle={false}
+              className="bg-blue100 text-blue800 pl-0-5 fs-10px fw-medium ls-1px"
+              containerClass="mt-1" 
+            />
+           
             <p className="fw-normal fs-1 mt-1 p-0 text-blue600">
               Selecciona a los participantes del grupo
             </p>
