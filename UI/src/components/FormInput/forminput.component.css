@@ -58,3 +58,8 @@ fieldset.forminput .input-wrapper input[type="file" i]::-webkit-file-upload-butt
   border: none;
   cursor: pointer;
 }
+
+fieldset.forminput input:invalid[data-focused="true"] ~ .input-eye,
+fieldset.forminput input[data-show-error="true"]:invalid ~ .input-eye {
+  color: var(--wine);
+}

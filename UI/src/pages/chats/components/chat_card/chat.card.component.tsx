@@ -12,6 +12,7 @@ interface IContactCard {
   nombre:string;
   ultimoMensaje:string;
   users:IUserDTO[];
+  sender: IUserDTO;
   currentUserGUID:string;
 }
 
@@ -20,7 +21,7 @@ interface ChatCardImage {
 }
 
 export default function ChatCard(props:IContactCard){
-  const { admin, users, currentUserGUID, isGroupChat, ultimoMensaje } = props;
+  const { admin, users, currentUserGUID, isGroupChat, ultimoMensaje, sender } = props;
   const youAreAdmin = currentUserGUID === admin?.guid;
   const adminFullName = `${admin?.nombre} ${admin?.apellido}`;
   const destinatario = users.filter(m => m.guid !== currentUserGUID)[0];
@@ -29,13 +30,29 @@ export default function ChatCard(props:IContactCard){
 
 
   const renderMsg = () => {
-    let msg = ultimoMensaje !== '' ? ultimoMensaje
-    : isGroupChat ? (youAreAdmin ? `~ Has creado el grupo ${chatName()}` : 
-    `~ ${adminFullName} te ha agregado a este grupo`) : 
-    `~ Has iniciado una conversación con ${chatName()}`;
+
+    let msg;
+    if(isGroupChat && ultimoMensaje !== '' && sender.guid !== currentUserGUID){
+      const nombre = `${sender.nombre} ${sender.apellido}`;
+      msg = `${nombre}: ${ultimoMensaje}`;
+    }
+    else if(ultimoMensaje !== ''){
+      msg = ultimoMensaje;
+    }
+    else if(isGroupChat){
+      if(youAreAdmin){
+        msg = `~ Has creado el grupo: ${chatName()}`;
+      }
+      else {
+        msg = `~ ${adminFullName} te ha agregado a este grupo`
+      }
+    }
+    else {
+      msg = `~ Has iniciado una conversación con ${chatName()}`
+    }
 
     return (
-      <p className="text-italic" title={msg}>
+      <p className={`${ultimoMensaje === '' && 'text-italic' }`} title={msg}>
         {msg}
       </p>
     );

@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './forminput.component.css';
 
 
@@ -40,7 +40,16 @@ export default function FormInput({...props}:IFormInput) {
   function EyeHandler(){
     setEye(!eye);
   }
-  
+
+  useEffect(()=>{
+    if(props.autoFocus){
+      setFocus(true);
+    }
+    else {
+      setFocus(false);
+    }
+  },[props.autoFocus]);
+    
   return (
     <>
       {readOnly ? (

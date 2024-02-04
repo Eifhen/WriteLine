@@ -8,12 +8,12 @@ import './writeline.app.component.css';
 
 export default function WriteLineApp({children}:any){
 
-  const { userData } = useWriteLineContext();
+  const { userData, setUserData } = useWriteLineContext();
 
   return (
     <div className='writeline-app-container'>
       <div className='writeline-app-activebar'>
-        <ActiveBar user={userData} />
+        <ActiveBar user={userData} setUserData={setUserData} />
       </div>
       <div className='writeline-app-content'>
           {children}

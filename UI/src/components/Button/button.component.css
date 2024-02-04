@@ -4,9 +4,9 @@
   letter-spacing: 0.2rem !important; 
   background-color: transparent;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 50px;
   color: var(--dark);
-  padding: 1rem;
+  padding: 0.9rem;
   transition: all ease-in-out 0.4s;
   border: none;
   display: flex;

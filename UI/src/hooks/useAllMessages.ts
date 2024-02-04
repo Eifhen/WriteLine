@@ -25,3 +25,15 @@ export default function useAllMessages(
     }
   }, dependencies);
 }
+
+
+export function getAllMessages(idChat:string, callback:(data:IMessageModel[])=> void){
+  MessageService.GetAllMessages(idChat)
+  .then((res)=> {
+    callback(res);
+  })
+  .catch((err)=>{
+    notify(err.message,"error");
+    throw err;
+  })
+}

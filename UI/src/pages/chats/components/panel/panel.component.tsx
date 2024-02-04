@@ -1,24 +1,26 @@
-import { forwardRef, useImperativeHandle, useState, useEffect, useRef, MutableRefObject } from 'react';
+import { forwardRef, useImperativeHandle, useState, useRef, MutableRefObject } from 'react';
 import Logo from '../../../../components/Logo/logo.component';
 import { IContactBar } from '../contacts/contact.bar.component';
 import './panel.component.desktop.css';
 import './panel.component.movil.css';
 import { IChatModel } from '../../../../models/ChatModel';
-import ChatGroupModalEdit, { IChatGroupModalEditExport } from '../chatgroup_modal/chatgroup.modal.edit';
+import { IChatGroupModalEditExport } from '../chatgroup_modal/chatgroup.modal.edit';
 import MessageCard from '../message_card/message_card.component';
 import getFormEntries from '../../../../utils/form.methods';
 import MessageBox, { IMessageBoxExport } from '../message_box/message_box.component';
 import MessageService from '../../../../services/MessageService/message.service';
 import notify from '../../../../utils/notify';
 import IMessageModel, { IMessageDTO } from '../../../../models/MessageModel';
-import useAllMessages from '../../../../hooks/useAllMessages';
-import { useGetUsersImages } from '../../../../hooks/useUserImage';
-
+import { IImageRecord, useGetUsersImages } from '../../../../hooks/useUserImage';
+import ChatLoader from '../chat_loader/chat_loader';
+import EmojiPicker from '../emoji_picker/emoji_picker';
+import { IUseSocketServer } from '../../../../hooks/useSocketServer';
 
 interface IPanelProps {
   contactItemRef?:MutableRefObject<IContactBar>;
   editGroupModalRef:MutableRefObject<IChatGroupModalEditExport>;
   currentUserGUID: string;
+  socketServer: IUseSocketServer;
 }
 
 export interface IPanel {
@@ -29,7 +31,10 @@ export interface IPanel {
   setImage: React.Dispatch<React.SetStateAction<string>>;
   chatName: () => string;
   getImage: (guid: string) => string;
-  setRelaod: React.Dispatch<React.SetStateAction<boolean>>
+  setRelaod: React.Dispatch<React.SetStateAction<boolean>>;
+  images: IImageRecord;
+  setMessages: React.Dispatch<React.SetStateAction<IMessageModel[]>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Panel = forwardRef((props:IPanelProps, ref) => {
@@ -37,13 +42,14 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
   const [activeItem, setActiveItem] = useState({} as IChatModel);
   const [image, setImage] = useState<string>('');
   const [messages, setMessages] = useState<IMessageModel[]>([]);
-  const [msgIsLoading, setMsgIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [reload, setRelaod] = useState<boolean>(false);
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
   const messageBoxRef:MutableRefObject<IMessageBoxExport | null> = useRef(null);
   const images = useGetUsersImages(activeItem, [activeItem, reload]);
   const isGroupChat = activeItem.isGroupChat;
-  const idChat = activeItem._id;
+  const idChat = activeItem._id;  
+
 
   const chatName = () => {
     if(activeItem.isGroupChat){
@@ -57,7 +63,7 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     if(activeItem.isGroupChat){
       return activeItem.users.map(m => `${m.nombre} ${m.apellido}`).join(", ");
     }
-    return "últ. vez hoy a la(s) 6:24 p.m."
+    return "Pulsa para obtener más info. del contacto."
   }
 
   const clearForm = () => {
@@ -66,21 +72,46 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     }
   }
 
-  const sendMessage = (event:any) => {
+  const handleSubmit = (event:any) => {
     event.preventDefault();
     const form = event.target;
     if(form.checkValidity()){
       const { messageBox } = getFormEntries(form);
-      
+      sendMessage(messageBox.toString());
+    }
+  }
+
+  const sendMessage = (message:string) => {
+    if(message.trimEnd() != ''){
       const data:IMessageDTO = {
         idChat,
-        message: messageBox.toString(),
+        message: message.trim(),
       }
 
       messageBoxRef.current?.setDisabled(true);
       MessageService.SendMessage(data)
       .then((res) => {
-        console.log("res =>", res);
+        props?.contactItemRef?.current?.setActiveItem((prev:IChatModel)=>{
+          prev.latestMessage = prev.latestMessage || {} as IMessageModel;
+          prev.latestMessage.content = res.content;
+          prev.latestMessage.sender = res.sender;
+          prev.latestMessage.chat = res.chat;
+          prev.latestMessage.date = res.date;
+          return {...prev};
+        })
+        
+        props.contactItemRef?.current.setActiveChats((prev:IChatModel[]) => {
+          const find =  prev.find(m => m._id === res.chat._id);
+          if(find){
+            find.latestMessage = find.latestMessage || {} as IMessageModel; 
+            find.latestMessage.content = res.content;
+            find.latestMessage.sender = res.sender;
+            find.latestMessage.chat = res.chat;
+            find.latestMessage.date = res.date;
+          }
+          return prev;
+        });
+
         setMessages((prev)=>([...prev, res]))
       })
       .catch(err => {
@@ -89,9 +120,12 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
       })
       .finally(()=>{
         clearForm();
-        messageBoxRef.current?.setDisabled(false);
-        messageBoxRef?.current?.setFocus(); 
+        messageBoxRef.current?.resetInput();
       })
+    }
+    else {
+      clearForm();
+      messageBoxRef.current?.resetInput();
     }
   }
 
@@ -110,19 +144,11 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     setActiveItem,
     setImage,
     getImage,
-    setRelaod
+    images,
+    setRelaod,
+    setMessages,
+    setIsLoading
   }));
-
-  useAllMessages(panelOpen, idChat, (data)=>{
-    console.log("refetch items");
-    setMessages(data);
-  }, [activeItem]);
-
-  useEffect(()=> {
-    if(panelOpen){ 
-      messageBoxRef?.current?.setFocus(); 
-    }
-  },[activeItem]);
 
   return(
     <>
@@ -138,28 +164,32 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
           </div>
         </div>
         <div className="panel-body">
-          <MessageCard 
-            getImage={getImage}
-            messages={messages} 
-            currentUserGUID={props.currentUserGUID}  
-          />
+          <ChatLoader isLoading={isLoading}>
+            <MessageCard
+              isGroupChat={isGroupChat} 
+              getImage={getImage}
+              messages={messages} 
+              currentUserGUID={props.currentUserGUID}  
+            />
+          </ChatLoader>
         </div>
-        <form ref={formRef} onSubmit={sendMessage} className='panel-footer' noValidate>
+        <form className='panel-footer' ref={formRef} onSubmit={handleSubmit}  noValidate>
           <div className='options'>
-            <div className='option-item'></div>
-            <div className='option-item'></div>
+            <EmojiPicker 
+              messageBoxRef={messageBoxRef}
+            />
           </div>
           <div className='message-area'>
             <MessageBox 
               ref={messageBoxRef}
-              disabled={false} 
+              disabled={false}
+              sendMessage={sendMessage} 
             />
           </div>
           <button className='send-btn'>
             <i className="ri-send-plane-2-fill"></i>
           </button>
         </form>
-        
       </div>
     ) : (
       <Logo 

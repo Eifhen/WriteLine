@@ -8,6 +8,7 @@ import { ChatModel, IChatModel } from "../Models/chat.model";
 import IUserModel, { UserModel } from "../Models/user.model";
 import { CodigoHTTP, MensajeHTTP } from '../Utilis/codigosHttp';
 import UserServices from "./user.service";
+import OrderChatsUsers, { OrderUsers } from "../Utilis/orderUsers";
 
 
 
@@ -49,7 +50,7 @@ class ChatServices implements IChatService {
             isGroupChat: false,
             isActive:true,
             creationDate: new Date(),
-            users: [current, destinatario]
+            users: [current, destinatario],
           }
   
           const createdChat = await ChatModel.create(newChat);
@@ -66,8 +67,8 @@ class ChatServices implements IChatService {
 
       throw ErrorHandler(CodigoHTTP.NotFound, MensajeHTTP.NotFound, __filename);
     }
-    catch(err){
-      throw ErrorHandler(CodigoHTTP.BadRequest, MensajeHTTP.BadRequest, __filename);
+    catch(err:any){
+      throw ErrorHandler(err.status, err.message, err.path);
     }
   }
 
@@ -87,7 +88,9 @@ class ChatServices implements IChatService {
         select: "nombre image email"
       });
 
-      return ResponseHandler<IChatModel[]>(chats, MensajeHTTP.OK);
+      const orderedChats = OrderChatsUsers(chats);
+
+      return ResponseHandler<IChatModel[]>(orderedChats, MensajeHTTP.OK);
     }
     catch(err){
       throw ErrorHandler(CodigoHTTP.BadRequest, MensajeHTTP.BadRequest, __filename);
@@ -110,13 +113,15 @@ class ChatServices implements IChatService {
             isActive: true,
             groupAdmin: req.currentUser,
             creationDate: new Date(),
-            users: users
+            users: users,
           } as IChatModel)
          
           await createdGroup.populate('users', "-password");
           await createdGroup.populate("groupAdmin","-password");
           
-          return ResponseHandler<IChatModel>(createdGroup, MensajeHTTP.Created);
+          const orderedChat = OrderUsers(createdGroup);
+
+          return ResponseHandler<IChatModel>(orderedChat, MensajeHTTP.Created);
         }
 
         throw ErrorHandler(CodigoHTTP.InternalServerError, "El chat no tiene participantes suficientes", __filename);
@@ -140,7 +145,9 @@ class ChatServices implements IChatService {
         await updatedChat.populate("users", "-password");
         await updatedChat.populate("groupAdmin","-password");
 
-        return ResponseHandler<IChatModel>(updatedChat, MensajeHTTP.OK);
+        const orderedChat = OrderUsers(updatedChat);
+
+        return ResponseHandler<IChatModel>(orderedChat, MensajeHTTP.OK);
       }
       throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
     }
@@ -159,8 +166,8 @@ class ChatServices implements IChatService {
         await chat.populate("users");
         chat.isActive = true;
         const updatedChat = await chat.save();
-
-        return ResponseHandler<IChatModel>(updatedChat, MensajeHTTP.OK);
+        const orderedChat = OrderUsers(updatedChat);
+        return ResponseHandler<IChatModel>(orderedChat, MensajeHTTP.OK);
       }
 
       throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
@@ -200,7 +207,9 @@ class ChatServices implements IChatService {
           await updatedChat.populate("users", "-password"); 
           await updatedChat.populate("groupAdmin", "-password");
 
-          return ResponseHandler<IChatModel>(updatedChat, MensajeHTTP.OK);
+          const orderedChat = OrderUsers(updatedChat);
+
+          return ResponseHandler<IChatModel>(orderedChat, MensajeHTTP.OK);
         }
       }
 
@@ -240,7 +249,9 @@ class ChatServices implements IChatService {
           await updatedChat.populate("users", "-password");
           await updatedChat.populate("groupAdmin", "-password");
 
-          return ResponseHandler(updatedChat, MensajeHTTP.Deleted);
+          const orderedChat = OrderUsers(updatedChat);
+
+          return ResponseHandler(orderedChat, MensajeHTTP.Deleted);
         }
 
         throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
@@ -257,7 +268,7 @@ class ChatServices implements IChatService {
     try {
 
       const current:IUserModel = req.currentUser!;
-      const chats:IChatModel[] = await ChatModel.find({
+      let chats:IChatModel[] = await ChatModel.find({
         users: { $elemMatch: { $eq: current._id }},
         isActive: true
       })
@@ -268,8 +279,11 @@ class ChatServices implements IChatService {
 
       await UserModel.populate(chats, {
         path: "latestMessage.sender",
-        select: "nombre image email"
+        select: "nombre apellido guid image email"
       });
+
+      // ordenar
+      chats = OrderChatsUsers(chats);
 
       return ResponseHandler<IChatModel[]>(chats, MensajeHTTP.OK);
     }
@@ -298,7 +312,9 @@ class ChatServices implements IChatService {
           await updatedChat.populate("users", "-password");
           await updatedChat.populate("groupAdmin", "-password");
 
-          return ResponseHandler(updatedChat, MensajeHTTP.Deleted);
+          const orderedChat = OrderUsers(updatedChat);
+
+          return ResponseHandler(orderedChat, MensajeHTTP.Deleted);
         }
         throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
       }

@@ -6,6 +6,7 @@ export default interface IUserDTO {
   email:string;
   password:string;
   image?:IUserImageDTO;
+  date?:Date;
   [key:string]:any;
 }
 

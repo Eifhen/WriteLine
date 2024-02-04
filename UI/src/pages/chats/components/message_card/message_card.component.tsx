@@ -10,6 +10,7 @@ import { IImageRecord } from "../../../../hooks/useUserImage";
 interface IMessageCard {
   messages: IMessageModel[]
   currentUserGUID: string;
+  isGroupChat: boolean;
   getImage: (guid:string) => string;
 }
 
@@ -20,7 +21,7 @@ interface IMessageCardExport {
 
 const MessageCard = forwardRef((props:IMessageCard, ref) => {
   
-  const { messages, currentUserGUID } = props;
+  const { messages, currentUserGUID, isGroupChat } = props;
 
   const isSameSender = (currentMessage:IMessageModel, currentMessageIndex:number ) => {
     return (
@@ -74,9 +75,19 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
     return currentMessageIndex > 0 && messages[currentMessageIndex - 1].sender.guid === currentMessage.sender.guid;
   }
 
-  const cardColor = (guid:string) => {
-    return guid === currentUserGUID ? "bg-green-cake " : "bg-blue400 text-blue100";
+  const cardColor = (guid:string, section: 'card' | 'title' | 'content') => {
+    if(section == 'card'){
+      return guid === currentUserGUID ? "bg-blue400" : "bg-pure ";
+    }
+    if(section == 'title') {
+      return guid === currentUserGUID ? 'text-white' : 'text-blue600';
+    }
+    if(section == 'content') {
+      return guid === currentUserGUID ? 'text-white' : 'text-blue-royal';
+    }
+    return '';
   }
+
 
   useImperativeHandle(ref, ()=>({
     isSameSender,
@@ -84,8 +95,8 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
   } as IMessageCardExport));
 
   return (
-    <ScrollableFeed>
-      <div className="p-1 d-flex flex-column overflow-y-auto">
+    <ScrollableFeed forceScroll={true} className="h-100">
+      <div className="p-1 d-flex flex-column ">
        {messages && messages.map((data, index)=>(
           <div className={`message_card ${messageAlignment(data, index)} ${marginTop(data, index)}`} key={index}>
             {(isSameSender(data, index) || isLastMessage(index)) && (
@@ -94,8 +105,15 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
                 image={props.getImage(data.sender.guid!)}
               />
             )}
-            <div className={`message_card_content ${cardColor(data?.sender?.guid!)}`}>
-              <p>{data.content}</p>
+            <div className={`message_card_content d-flex flex-column ${cardColor(data?.sender?.guid!, 'card')}`}>
+              {(isSameSender(data, index) && isGroupChat || isLastMessage(index) && isGroupChat) && (
+                <h1 className={`fs-smaller fw-bold-1 ${cardColor(data?.sender?.guid!, 'title')}`}>
+                  {data?.sender?.nombre} {data?.sender?.apellido}
+                </h1>
+              )}
+              <p className={`${cardColor(data?.sender?.guid!, 'content')}`}>
+                {data.content}
+              </p>
             </div>
           </div>
         ))}

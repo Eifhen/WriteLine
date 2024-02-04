@@ -4,14 +4,16 @@ import './activebar.component.desktop.css';
 import './activebar.component.movil.css';
 import IUserDTO from '../../models/UserModel';
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
-import { useState } from 'react';
+import { MutableRefObject, useRef, useState } from 'react';
 import WritelineButton   from '../Button/Button.component';
 import AutenticationService from '../../services/AutenticationService/AutenticationService';
 import notify from '../../utils/notify';
 import UserIcon from '../../assets/images/user_icon2.png';
+import ConfigModal, { IConfigModalExport } from '../configModal/configModal.component';
 
 interface IActiveBar {
   user:IUserDTO;
+  setUserData: React.Dispatch<React.SetStateAction<IUserDTO>>;
 }
 
 export default function ActiveBar (props:IActiveBar) {
@@ -20,6 +22,9 @@ export default function ActiveBar (props:IActiveBar) {
   const [show, setShow] = useState<boolean>(false);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [disable, setDisable] = useState<boolean>(false);
+  const configModalRef:MutableRefObject<IConfigModalExport | null> = useRef(null);
+  const configBtnRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+  const profileBtnRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 
   const logout = () => {
     setIsloading(true);
@@ -36,6 +41,7 @@ export default function ActiveBar (props:IActiveBar) {
     setDisable(false);
   }
 
+
   return (
     <>
       <aside className='activebar'>
@@ -49,12 +55,21 @@ export default function ActiveBar (props:IActiveBar) {
             <i className="ri-arrow-go-back-line"></i>
           </div>
           
-          <NavLink to="../config" title="Configuraciones" className='active-item account-configuration'>
+          <div 
+            ref={configBtnRef} 
+            title="Configuraciones" 
+            onClick={()=> configModalRef.current?.openModal('config')} 
+            className='active-item account-configuration'
+          >
             <i className="ri-settings-3-line"/>
-          </NavLink>
+          </div>
 
-          <div className='user-configuration'>
-            {props.user.image ? (
+          <div 
+            ref={profileBtnRef}  
+            className='user-configuration'
+            onClick={()=> configModalRef.current?.openModal('profile')}
+          >
+            {props.user.image && props.user.image.base64 !== '' ? (
               <img title="Ver perfil" src={props.user.image.base64} alt="foto del usuario" />
             ): (
               <img title="Ver perfil" src={UserIcon} alt="foto del usuario" />
@@ -94,6 +109,12 @@ export default function ActiveBar (props:IActiveBar) {
           </ModalBody>
         </ModalContent>
       </Modal>
+      <ConfigModal 
+        ref={configModalRef}
+        configBtnRef={configBtnRef}
+        profileBtnRef={profileBtnRef}
+        user={ props.user } 
+      />
     </>
   );
 }

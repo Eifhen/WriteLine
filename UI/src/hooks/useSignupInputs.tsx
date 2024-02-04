@@ -15,6 +15,7 @@ interface ISignupInputs {
   del Signup
 */
 export default function useSignupInputs () : IFormInput[] {
+  const [autoFocus, setAutoFocus] = useState<boolean>(false);
   const [inputs, setInputs] = useState<ISignupInputs>({
     nombre:'',
     apellido: '',
@@ -23,7 +24,10 @@ export default function useSignupInputs () : IFormInput[] {
     confirm_password: '',
   });
 
-  function handleChange(event:any){ 
+  function handleChange(event:any){
+    if(!autoFocus){
+      setAutoFocus(true);
+    } 
     setInputs((prev)=> ({
       ...prev, [event.target.id]: event.target.value
     }));
@@ -34,7 +38,7 @@ export default function useSignupInputs () : IFormInput[] {
       title:'Nombre:',
       errorMessage:"El nombre de usuario debe tener entre 3-16 caracteres y no debe poseer números ni ningún caracter especial",
       required: true, 
-      autoFocus:true,
+      autoFocus: autoFocus,
       input:{
         type:"text",
         id:"nombre",
@@ -50,7 +54,7 @@ export default function useSignupInputs () : IFormInput[] {
       title:'Apellido:',
       errorMessage:"El apellido del usuario debe tener entre 3-16 caracteres y no debe poseer números ni ningún caracter especial",
       required:true,
-      autoFocus:true, 
+      autoFocus: autoFocus, 
       input:{
         type:"text",
         id:"apellido",
@@ -65,7 +69,7 @@ export default function useSignupInputs () : IFormInput[] {
     {
       title:'Email:',
       required: true,
-      autoFocus:true,
+      autoFocus: autoFocus,
       errorMessage:"Ingresa un email valido", 
       input:{
         type:"email",
@@ -81,7 +85,7 @@ export default function useSignupInputs () : IFormInput[] {
       title:'Contraseña:',
       errorMessage:"La contraseña debe ser de 5-20 caracteres y debe incluir por lo menos 1 letra, 1 número y un caracter especial (exceptuando al caracter $)", 
       required: true, 
-      autoFocus:true,
+      autoFocus: autoFocus,
       input:{
         type:"password",
         id:"password",
@@ -97,7 +101,7 @@ export default function useSignupInputs () : IFormInput[] {
       title:'Confirmar contraseña:',
       errorMessage:"las contraseñas no coinciden",
       required: true, 
-      autoFocus: true,
+      autoFocus: autoFocus,
       input:{
         type:"password",
         id:"confirm_password",

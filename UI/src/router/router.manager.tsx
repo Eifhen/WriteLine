@@ -4,7 +4,6 @@ import SignupPage from '../pages/signup/signup.page';
 import LoginPage from '../pages/login/login.page';
 import HomePage from '../pages/home/home.page';
 import ChatsPage from '../pages/chats/chats.page';
-import ConfigPage from '../pages/config/config.page';
 import Error404Page from '../pages/error404/error404.page';
 import AutenticationRoute from './autentication.route';
 import { useMemo } from 'react';
@@ -32,7 +31,6 @@ export default function RouterManager(){
         <Route element={<AutenticationRoute/>}>
           <Route element={ WriteLineProvider }>
             <Route path="/chats" element={ <ChatsPage/> } />
-            <Route path="/config" element={ <ConfigPage/> } />
           </Route>
         </Route>
         

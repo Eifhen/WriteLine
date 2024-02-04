@@ -7,6 +7,7 @@ import SignUpController from '../Controller/SignUpController';
 import SignInController from '../Controller/SignInController';
 import AutenticationManager from '../Configuration/autentication.handler.config';
 import ChatController  from '../Controller/ChatController';
+import MessageController from '../Controller/MessageController';
 
 
 export default function RouterManager(config:IConfiguracion){
@@ -19,6 +20,7 @@ export default function RouterManager(config:IConfiguracion){
   router.use("/signin", SignInController);
   router.use("/users", autentication, UserController);
   router.use("/chats", autentication, ChatController);
+  router.use("/messages", autentication, MessageController);
   
   return router;
 }

@@ -1,15 +1,16 @@
 import { CodigoHTTP, MensajeHTTP } from "../Utilis/codigosHttp";
 import IUserService from "../Interfaces/user.service.interface";
-import IUserModel, { UserModel, validateUserModel } from "../Models/user.model";
+import IUserModel, { IUserImage, UserModel, validateUserModel } from "../Models/user.model";
 import { ErrorHandler } from "../Configuration/error.handler.config";
 import { isNotEmpty } from "../Utilis/isEmpty";
 import { IResponseHandler, ResponseHandler } from "../Configuration/response.handler.config";
 import {nanoid} from 'nanoid';
 import WriteLineRequest from "../Interfaces/auth.request.interface";
-import IUserDTO, { ToUserDTO } from "../DTO/user.dto";
+import IUserDTO, { ToUserDTO, validateUserDTO } from "../DTO/user.dto";
 import ImageManager from '../Utilis/image.manager';
 import IImageManager from "../Interfaces/image.manager.interface";
- 
+import TransactionManager from "../Utilis/transaction.manager";
+
 export class UserService implements IUserService {
 
   imageManager: IImageManager;
@@ -53,7 +54,7 @@ export class UserService implements IUserService {
   }
 
   async GetUser(guid:string) : Promise<IResponseHandler<IUserDTO>>{
-    const find:IUserModel | null = await UserModel.findOne({ guid }).lean().exec();
+    const find:IUserModel | null = await UserModel.findOne({ guid });
     if(find) { 
       const user:IUserDTO = ToUserDTO(find);
       if(user.image?.fileName){
@@ -96,23 +97,57 @@ export class UserService implements IUserService {
     throw ErrorHandler(CodigoHTTP.BadRequest, '', __filename);
   }
 
-  async UpdateUser(guid:string, user:IUserModel) : Promise<IResponseHandler<IUserModel>>{
-    if(isNotEmpty(user) && validateUserModel(user)){   
+  async UpdateUser(guid:string, user:IUserDTO) : Promise<IResponseHandler<IUserDTO>>{
+    const {isValid, errors} = validateUserDTO(user); 
+    if(isValid){   
       const find = await UserModel.findOne({ guid }).exec();
+      const { session, commitTransaction, rollBack  } = await TransactionManager();
 
       if(find){
-        find.nombre = user.nombre;
-        find.apellido = user.apellido;
-        find.email = user.email;
-        find.password = user.password
-        
-        const updatedUser:IUserModel = await find.save();
+        try {
+          find.nombre = user.nombre;
+          find.apellido = user.apellido;
+          find.email = user.email;
+          if(user.password){
+            find.password = user.password;
+          }
 
-        return ResponseHandler<IUserModel>(updatedUser, MensajeHTTP.OK);
+          if(user.image && user.image.base64){
+            user.image.fileName = this.imageManager.setUserImageName(find.guid);
+            
+            if(find.image && isNotEmpty(find.image.fileName) && isNotEmpty(find.image.extension) ){
+              // si ya existe una imagen la removemos
+              await this.imageManager.RemoveImage(find.image.fileName, find.image.extension);
+            }
+
+            find.image = {
+              base64: '', // el base64 no lo guardo en la bd;
+              fileName: user.image.fileName,
+              extension: user.image.extension
+            } as IUserImage;
+            
+            await this.imageManager.SaveImage(user.image.base64, user.image.fileName, user.image.extension);
+          }
+          
+          const updatedUser:IUserModel = await find.save({session});
+          const userDTO:IUserDTO = ToUserDTO(updatedUser);
+
+          if(user.image && user.image.base64 && user.image.extension && userDTO.image){
+            userDTO.image.base64 = this.imageManager.GetImageFormat(user.image.base64, user.image.extension);
+          }
+
+          await commitTransaction();
+          return ResponseHandler<IUserDTO>(userDTO, MensajeHTTP.OK);
+
+        }
+        catch(err:any){
+          await rollBack(); 
+          throw ErrorHandler(CodigoHTTP.BadRequest, err.message, __filename);
+        }
       }
       throw ErrorHandler(CodigoHTTP.NotFound, '', __filename);
     }
-    throw ErrorHandler(CodigoHTTP.BadRequest, '', __filename);
+    throw ErrorHandler(CodigoHTTP.BadRequest, errors, __filename);
   }
 
   async DeleteUser(guid: string): Promise<IResponseHandler<IUserModel>> {
@@ -137,6 +172,26 @@ export class UserService implements IUserService {
       }
       throw ErrorHandler(CodigoHTTP.NotFound, 'Error al buscar el usuario', __filename);
 
+    }
+    catch(err:any){
+      throw ErrorHandler(err.status, err.message, err.path);
+    }
+  }
+
+  async UpdatePassword(req:WriteLineRequest) : Promise<IResponseHandler<string>>{
+    try {
+      const currentUser = req.currentUser;
+      const newPassword = req.body.password;
+  
+      if(currentUser){
+        currentUser.password = newPassword;
+        
+        await currentUser.save();
+        
+        return ResponseHandler<string>('Contraseña actualizada.', MensajeHTTP.OK);
+      }
+  
+      throw ErrorHandler(CodigoHTTP.BadRequest, '', __filename);
     }
     catch(err:any){
       throw ErrorHandler(err.status, err.message, err.path);

@@ -38,3 +38,7 @@ export function ifEmpty(value:any, orValue:any){
   }
   return orValue;
 }
+
+export function objectIsNotEmpty(object:any){
+  return Object.keys(object).length > 0;
+}

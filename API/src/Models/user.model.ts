@@ -15,6 +15,7 @@ export default interface IUserModel extends mongoose.Document {
   password:string;
   image?:IUserImage;
   amigos?: IUserModel[];
+  createdAt?: Date,
   //matchPassword:(password: string) => Promise<boolean>;
 }
 
@@ -65,6 +66,13 @@ export const IUserModelScheme = {
       errorMessage: {
         type: "La contraseña debe ser de tipo string",
         pattern: "La contraseña debe ser de 5-100 caracteres y debe incluir por lo menos 1 letra, 1 número y un caracter especial (exceptuando al caracter $)",
+      }
+    },
+    createdAt: {
+      type: "string",
+      format: "date-time", // Asegúrate de tener este formato según tus necesidades
+      errorMessage: {
+        format: "La propiedad 'createdAt' debe ser una cadena de fecha y hora en el formato ISO8601."
       }
     },
     image: {

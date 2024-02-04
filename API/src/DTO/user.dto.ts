@@ -9,7 +9,9 @@ export default interface IUserDTO {
   nombre:string;
   apellido:string;
   email:string;
+  password?:string;
   image?:IUserImageDTO;
+  date?: Date;
 }
 
 export interface IUserImageDTO{
@@ -53,9 +55,16 @@ export const IUserDTOScheme = {
         format:"El formato del email no es valido."
       }
     },
-    image: {
-      type:"string"
+    password:{
+      type:"string",
     },
+    image: {
+      type:"object"
+    },
+    date: {
+      type:"string",
+      format: "date-time"
+    }
   },
   required: ["nombre","apellido","email"],
   additionalProperties: false,
@@ -78,6 +87,20 @@ export const ToUserDTO = (user:IUserModel) : IUserDTO => {
     apellido: user.apellido,
     email: user.email,
     image: user.image,
+    date: user.createdAt
+  }
+}
+
+export const ToUserDTOWithPassword = (user:IUserModel) : IUserDTO => {
+  return {
+    _id: user._id,
+    guid: user.guid,
+    nombre: user.nombre,
+    apellido: user.apellido,
+    email: user.email,
+    password: user.password,
+    image: user.image,
+    date: user.createdAt
   }
 }
 

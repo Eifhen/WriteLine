@@ -14,7 +14,7 @@ import notify from "./notify";
 
 export default function ToBase64(
   file: File,
-  callback: (filebase64: string, name:string, extension:string, result?:any) => void
+  callback: (resultbase64: string, name:string, extension:string) => void
 ) {
   const reader = new FileReader();
   reader.readAsDataURL(file);
@@ -22,10 +22,10 @@ export default function ToBase64(
     const filebase64 = reader.result?.toString().split(',')[1];
     const fileExtension = `${(file.name.split('.').pop() || '').toLowerCase()}`;
     const fileName = file.name.split(".")[0];
-    const result = reader.result;
+    const resultbase64 = reader.result?.toString();
    
-    if (filebase64) {
-      callback(filebase64, fileName, fileExtension, result);
+    if (filebase64 && resultbase64) {
+      callback(resultbase64, fileName, fileExtension);
     }
   };
   reader.onerror = function (error) {

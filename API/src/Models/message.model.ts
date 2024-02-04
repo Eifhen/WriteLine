@@ -5,10 +5,11 @@ import { IUserModelScheme } from './user.model';
 import { SchemeValidator } from '../Validations/scheme.validator';
 
 export default interface IMessageModel {
-  sender: IUserModel;
+  _id?: mongoose.Types.ObjectId;
+  sender?: IUserModel;
   content: string;
-  chat: IChatModel;
-  date: Date;
+  chat?: IChatModel;
+  date?: Date;
 }
 
 /******************************************
@@ -19,6 +20,7 @@ export const IMessageModelScheme = {
   title: "IMessageModelScheme",
   description: "Esquema para la interfaz IMessageModel",
   properties:{
+    _id: { type: "string" },
     sender: { 
       type:"object", 
       $ref: "#/definitions/IUserModelScheme", 

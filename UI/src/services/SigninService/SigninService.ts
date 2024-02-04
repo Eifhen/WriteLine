@@ -19,6 +19,14 @@ class SigninServices {
       .catch(err => reject(err));
     })
   }
+  
+  UpdateAutentication(data:ILoginModel){
+    return new Promise((resolve, reject)=>{
+      HTTP.AnonymousPost<any>("signin/update", data)
+      .then(res => resolve(res))
+      .catch(err => reject(err));
+    })
+  }
 
 }
 

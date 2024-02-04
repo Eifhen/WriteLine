@@ -1,7 +1,7 @@
 import { useState } from "react";
 import IUserDTO from "../../../../models/UserModel";
 import UserIcon from '../../../../assets/images/user_icon2.png';
-import { useGetUserImageByGUID } from "../../../../hooks/useUserImage";
+import { IImageRecord, useGetUserImageByGUID } from "../../../../hooks/useUserImage";
 import CloseIcon from "../../../../components/closeIcon/closeIcon.component";
 
 interface ISearchedUserCard {
@@ -11,6 +11,7 @@ interface ISearchedUserCard {
   user:IUserDTO;
   removeAction?:()=> void;
   allowRemove?:boolean;
+  image?:string;
 }
 
 interface UserCardImage {
@@ -39,6 +40,29 @@ export default function UserCard(props: ISearchedUserCard){
   return (
     <div className={`contact-item p-relative ${props.isActive}`} onClick={()=> operation()}>
       <img src={image[user.guid!] || UserIcon}  alt="" />
+      <div className='contact-item-info '>
+        {isAdmin && (
+          <span className="fs-small fw-bold d-inline-block rounded bg-blue300 text-white pl-0-5 pr-0-5 mb-0-2">Admin</span>
+        )}
+        <h1 title={fullName}>{fullName}</h1>
+      </div>
+        {props.removeAction && allowRemove && (
+          <CloseIcon className="top-0-5" sizeClass="fs-1-2" operation={props.removeAction} />
+        )}
+    </div>
+  )
+}
+
+export function UserCardWithImage(props: ISearchedUserCard){
+  const { user } = props;
+  const fullName = `${user.nombre} ${user.apellido}`;
+  const isAdmin = props.isAdmin ?? false;
+  const allowRemove = props.allowRemove ?? false;
+  const img = props.image ?? UserIcon;
+
+  return (
+    <div className={`contact-item p-relative ${props.isActive}`}>
+      <img src={img}  alt="" />
       <div className='contact-item-info '>
         {isAdmin && (
           <span className="fs-small fw-bold d-inline-block rounded bg-blue300 text-white pl-0-5 pr-0-5 mb-0-2">Admin</span>

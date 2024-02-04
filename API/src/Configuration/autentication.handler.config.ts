@@ -24,7 +24,7 @@ export default function AutenticationManager (config:IConfiguracion) : RequestHa
         if(decode){
           // validar que el usuario exista;
           const guid = decode.data.guid;
-          const currentUser:IUserModel | null = await UserModel.findOne({guid}).lean().exec();
+          const currentUser:IUserModel | null = await UserModel.findOne({guid});
           if(currentUser){
             req.currentUser = currentUser;
             req.decodedToken = decode;
@@ -35,8 +35,9 @@ export default function AutenticationManager (config:IConfiguracion) : RequestHa
       }
       throw ErrorHandler(CodigoHTTP.Unauthorized, `Sin Token: ${token}`, __filename);
     }
-    catch(err){
-      next(err);
+    catch(err:any){
+      throw ErrorHandler(err.status, err.message, err.path);
+      //next(err);
     }
   }
 }

@@ -12,12 +12,16 @@ interface ILoginInputs {
   del Login
 */
 export default function useLoginInputs () : IFormInput[] {
+  const [autoFocus, setAutoFocus] = useState<boolean>(false);
   const [inputs, setInputs] = useState<ILoginInputs>({
     email: '',
     password: '',
   });
 
   function handleChange(event:any){ 
+    if(!autoFocus){
+      setAutoFocus(true);
+    }
     setInputs((prev)=> ({
       ...prev, [event.target.name]: event.target.value
     }));
@@ -27,7 +31,7 @@ export default function useLoginInputs () : IFormInput[] {
     {
       title:'Email',
       required: true,
-      autoFocus:true,
+      autoFocus,
       errorMessage:"Ingresa un email valido", 
       input:{
         type:"email",
@@ -42,7 +46,7 @@ export default function useLoginInputs () : IFormInput[] {
       title:'Contraseña',
       errorMessage:"La contraseña debe ser de 5-20 caracteres y debe incluir por lo menos 1 letra, 1 número y un caracter especial (exceptuando al caracter $)", 
       required: true, 
-      autoFocus:true,
+      autoFocus,
       input:{
         type:"password",
         name:"password",

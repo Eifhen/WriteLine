@@ -8,13 +8,14 @@ import ImageManager from "../Utilis/image.manager";
 import TransactionManager from "../Utilis/transaction.manager";
 import { IMAGE_BASE64_PATTERN } from "../Patterns/image.pattern";
 import IUserDTO from "../DTO/user.dto";
+import { isNotEmpty } from "../Utilis/isEmpty";
 
 class SignUpService implements ISignUpService {
 
   async Register(data:IUserModel): Promise<IResponseHandler<IUserModel>> {
     const guid = nanoid(10);
-    const imageFileName = `user_${guid}`;
     const imageManager = new ImageManager();
+    const imageFileName = imageManager.setUserImageName(guid);
     const { session, commitTransaction, rollBack  } = await TransactionManager();
 
     try {
@@ -46,7 +47,14 @@ class SignUpService implements ISignUpService {
     }
     catch(err:any){
       await rollBack(); 
-      await imageManager.RemoveImage(imageFileName);
+      if (
+        data.image && 
+        isNotEmpty(data.image?.base64) && 
+        isNotEmpty(data.image.fileName) && 
+        isNotEmpty(data.image.extension)
+      ) {
+        await imageManager.RemoveImage(imageFileName, data.image.extension);
+      }
       throw ErrorHandler(CodigoHTTP.BadRequest, err.message, __filename);
     }
   }

@@ -10,7 +10,7 @@ import { IChatModel, IGroupChatDTO } from "../../../../models/ChatModel";
 import { formatDateToDDMMYYYY } from "../../../../utils/date.manager";
 import useGroupInputs from "../../../../hooks/useGroupInput";
 import EditIcon from "../../../../components/editIcon/editIcon";
-import UserCard from "../user_card/user.card.component";
+import UserCard, { UserCardWithImage } from "../user_card/user.card.component";
 import IUserDTO from "../../../../models/UserModel";
 import HTTP from "../../../../services/HttpService/HTTPService";
 import { Difference } from "../../../../utils/collection.manager";
@@ -20,6 +20,8 @@ import { IContactBar } from "../contacts/contact.bar.component";
 import GroupChatImg from '../../../../assets/images/group_chat_transparent.png';
 import UserTags from "../../../../components/UserTags/userTags.component";
 import { IPanel } from "../panel/panel.component";
+import objectIsNotEmpty from "../../../../utils/object_helpers";
+import { IImageRecord } from "../../../../hooks/useUserImage";
 
 export interface IChatGroupModalEditExport {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,36 +30,31 @@ export interface IChatGroupModalEditExport {
 
 
 export interface IChatGroupModalEditProps { 
-  // item: IChatModel;
-  // chatName:() => string;
-  // setItem: React.Dispatch<React.SetStateAction<IChatModel>>;
-  // setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  // getImage: (guid:string) => string;
   contactItemRef?:MutableRefObject<IContactBar>;
   panelRef: MutableRefObject<IPanel>;
   currentUserGUID: string;
 }
 
 const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
-  console.log("panel ref =>", props.panelRef.current);
-
   const [modal, setModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
   const [userLoader, setUserLoader] = useState<boolean>(true);
   const [inputReadOnly, setInputReadOnly] = useState<boolean>(true);
   const [removedUsers, setRemovedUsers] = useState<IUserDTO[]>([]);
-  const [currentUsers, setCurrentUsers] = useState<IUserDTO[]>(props.panelRef?.current.activeItem?.users ?? []);
+  const [currentUsers, setCurrentUsers] = useState<IUserDTO[]>([]);
   const [isAddingUser, setIsAddingUser] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<IUserDTO[]>([]);
   const [allUsers, setAllUsers] = useState<IUserDTO[]>([]);
-  const youAreAdmin = HTTP.GetCurrentUser().data.guid === props.panelRef?.current.activeItem?.groupAdmin?.guid;
-  const isGroupChat = props.panelRef?.current?.activeItem?.isGroupChat;
-  const destinatario = isGroupChat ? 
-  {} as IUserDTO : 
-  props.panelRef?.current?.activeItem?.users.filter(m => m.guid !== props.currentUserGUID)[0]!;
- 
-  const image = isGroupChat ? GroupChatImg : props?.panelRef?.current?.getImage(destinatario?.guid!);
+  const [youAreAdmin, setYouAreAdmin] = useState<boolean>(false);
+  const [adminGUID, setAdminGUID] = useState<string>("");
+  const [isGroupChat, setIsGroupChat] = useState<boolean>(false);
+  const [destinatario, setDestinatario] = useState({} as IUserDTO);
+  const [image, setImage] = useState<string>(GroupChatImg);
+  const [userImages, setUserImages] = useState<IImageRecord>({});
+  const [chatName, setChatName] = useState<string>('');
+  const [chatDate, setChatDate] = useState<Date>(new Date());
+  const [item, setItem] = useState<IChatModel>({} as IChatModel);
 
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
   const inputs = useGroupInputs({
@@ -66,7 +63,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
       text-blue700 m-0 p-0 mr-1 border-0 rounded-0 fmly-secondary-font 
       ${inputReadOnly ? '' : 'border-bottom-2px mb-0-4'}
     `,
-    chatName: props?.panelRef?.current?.chatName() ?? '',
+    chatName: chatName,
     formInputAttr: {
       fieldClass:`
         title fmly-secondary-font fw-bold w-max-250px 
@@ -124,6 +121,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
     setModal(true);
     setCurrentUsers(item.users);
     setRemovedUsers([]);
+    setItem(item);
   }
 
   const onModalClose = () => {
@@ -259,10 +257,12 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
   const deleteChat = () => {
     setIsLoading(true);
     if(props.panelRef?.current.activeItem){
-      ChatService.DeleteGroup(props.panelRef?.current.activeItem._id)
+      const group = props.panelRef?.current.activeItem
+      ChatService.DeleteGroup(group._id)
       .then(()=> {
+        notify(`El grupo <<${group.name}>> fue eliminado exitosamente!`, "success");
         props.contactItemRef?.current.setActiveChats((prev)=> {
-          return prev.filter(m => m._id !== props.panelRef?.current.activeItem._id);
+          return prev.filter(m => m._id !== group._id);
         });
         props.panelRef?.current?.setPanelOpen(false);
       })
@@ -280,6 +280,35 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
     setModal,
     ModalInit
   }));
+
+  useEffect(()=>{
+    if(item && objectIsNotEmpty(item) && objectIsNotEmpty(props.panelRef.current) && props.panelRef.current.panelOpen){
+     
+      setYouAreAdmin(HTTP.GetCurrentUser().data.guid === item?.groupAdmin?.guid);
+      setIsGroupChat(item?.isGroupChat);
+      setChatName(props?.panelRef?.current?.chatName());
+      setAdminGUID(item.groupAdmin?.guid!);
+      setChatDate(item.creationDate!);
+      setDestinatario(
+        isGroupChat ? {} as IUserDTO : 
+        item?.users.filter(m => m.guid !== props.currentUserGUID)[0]!
+      );
+      setImage(
+        isGroupChat ? GroupChatImg : 
+        props?.panelRef?.current?.getImage(destinatario?.guid!)
+      );
+      setUserImages(
+        isGroupChat ? props.panelRef.current.images :
+        {}
+      )
+    }
+  },[
+    props.panelRef, 
+    props.panelRef.current, 
+    props.panelRef.current.panelOpen,
+    isGroupChat,
+    item
+  ])
 
   return (
     <Modal 
@@ -324,7 +353,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                           key={index} 
                           user={u}
                           isActive={isActive(u.guid!)}
-                          isAdmin={u.guid === props.panelRef?.current.activeItem.groupAdmin?.guid} 
+                          isAdmin={u.guid === adminGUID} 
                           operation={()=>handleSelectUser(u)}
                         />
                       ))}
@@ -354,7 +383,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                           disabled={isLoading ? true : false} 
                           showError={showError}
                           readOnly={ inputReadOnly} 
-                          value={props.panelRef?.current.chatName()}
+                          value={chatName}
                           {...input} 
                         />
                       ))}
@@ -363,14 +392,14 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                       )}
                     </div>
                     <p className="fs-smaller fw-bold fmly-primary-font text-blue400 m-0 p-0 ">
-                      {formatDateToDDMMYYYY(props?.panelRef?.current.activeItem.creationDate!, " / ")}
+                      {formatDateToDDMMYYYY(chatDate, " / ")}
                     </p>
                   </div>
                 </div>
                 {isGroupChat ? (
                   <>
                     <div className="pl-2 pr-2 pb-1">
-                      <h1 className="
+                      <h1 className="d-none
                         fw-bold fs-1 fmly-secondary-font ls-2px 
                         bg-blue400 text-white text-center w-150px p-0-5 mt-1 mb-1 
                         rounded-top-right-big rounded-bottom-left-big"
@@ -382,8 +411,8 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                         users={removedUsers} 
                         title="Removidos"
                         showTitle={removedUsers.length > 0}
-                        titleClass="mb-0-5 mt-0-5 ls-1px fs-smaller text-red fw-bold fmly-secondary-font"
-                        className="bg-red-palid text-red pl-0-5 fs-10px fw-medium ls-1px"
+                        titleClass="mb-0-5 mt-0-5 pl-0-4 ls-1px fs-smaller text-red fw-bold fmly-secondary-font"
+                        className="bg-red-palid text-red pl-0-5 fs-9px fw-bold-1 ls-1px"
                         containerClass="border-left-2px border-red pl-0-5" 
                       />
 
@@ -400,12 +429,13 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
                       <div className="mt-0">
                         <ContactLoader isLoading={false}>
                           {currentUsers.map((u, index) => (
-                            <UserCard
+                            <UserCardWithImage
                               key={index} 
                               user={u}
-                              isAdmin={u.guid === props?.panelRef?.current?.activeItem.groupAdmin?.guid} 
+                              image={userImages[u.guid!]}
+                              isAdmin={u.guid === adminGUID} 
                               removeAction={()=>removeUser(u)} 
-                              allowRemove={youAreAdmin && u.guid != props?.panelRef?.current?.activeItem.groupAdmin?.guid} 
+                              allowRemove={youAreAdmin && u.guid != adminGUID} 
                             />
                           ))}
                         </ContactLoader> 
@@ -449,7 +479,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
               </>
             )}
           </ModalBody>
-          {isGroupChat && (youAreAdmin || isAddingUser) && (
+          {isGroupChat && youAreAdmin &&( isAddingUser || removedUsers.length > 0 || !inputReadOnly) && (
             <ModalFooter className='d-flex justify-end pr-2 pt-0 pb-0-9'>
               <WritelineButton  
                 className="simple bg-blue400 text-white fw-bold rounded-pill mr-0-4" 

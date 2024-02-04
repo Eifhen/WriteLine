@@ -51,6 +51,30 @@ class UserServices {
     })
   }
 
+  UpdateUser(guid:string, user:IUserDTO){
+    return new Promise((resolve:(users:IUserDTO) => void, reject)=>{
+      HTTP.Put(`/users/${guid}`, user)
+      .then((res:any)=>{
+        resolve(res.data as IUserDTO);
+      })
+      .catch((err:any)=> {
+        reject(err);
+      })
+    })
+  }
+
+  UpdatePassword(password:any){
+    return new Promise((resolve:(users:string) => void, reject)=>{
+      HTTP.Put(`/users/change-password`, password)
+      .then((res:any)=>{
+        resolve(res.data.toString());
+      })
+      .catch((err:any)=> {
+        reject(err);
+      })
+    })
+  }
+
 }
 
 const UserService = new UserServices();

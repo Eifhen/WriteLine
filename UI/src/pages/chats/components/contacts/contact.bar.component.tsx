@@ -11,12 +11,15 @@ import ContactLoader from '../contact_loader/contact.loader.component';
 import IUserDTO from '../../../../models/UserModel';
 import UserCard from '../user_card/user.card.component';
 import ChatService from '../../../../services/ChatService/chat.service';
-import { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal';
+import { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal.add';
+import { getAllMessages } from '../../../../hooks/useAllMessages';
+import { IUseSocketServer } from '../../../../hooks/useSocketServer';
 
 interface IContactBarProps {
   panelRef?: MutableRefObject<IPanel>
   chatGroupRef?:MutableRefObject<IChatGroupModalExport>
   currentUserGUID: string;
+  socketServer: IUseSocketServer;
 }
 export interface IContactBar {
   activeItem: IChatModel;
@@ -42,12 +45,26 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
     return activeItem._id === id ? "active" : '';
   }
 
+  const itemIsActive = (id:string) => {
+    return activeItem._id === id;
+  }
+
   const handleActiveItem = (item:IChatModel, base64:string) => {
-    setActiveItem(item);
-    if(props.panelRef){
-      props.panelRef?.current?.setPanelOpen(true);
-      props.panelRef?.current?.setActiveItem(item);
-      props.panelRef?.current?.setImage(base64);
+    if(!itemIsActive(item._id)){ // se aplica para impedir re-ejecución al dar click al mismo item
+      setActiveItem(item);
+      if(props.panelRef){
+        props.panelRef?.current?.setIsLoading(true);
+        getAllMessages(item._id, (messages)=>{
+          props.panelRef?.current?.setPanelOpen(true);
+          props.panelRef?.current?.setActiveItem(item);
+          props.panelRef?.current?.setMessages(messages);
+          props.panelRef?.current?.setImage(base64);
+          props.panelRef?.current?.setIsLoading(false);
+          
+          props.socketServer.joinChat(item._id);
+          props.socketServer.setChat(item);
+        })
+      }
     }
   }
 
@@ -100,7 +117,6 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
       searchInputRef.current.value = '';
     }
   }
-  
  
   useImperativeHandle(ref, () : IContactBar =>({
     activeItem,
@@ -164,6 +180,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
                     key={index}
                     users={item.users}
                     nombre={item.name}
+                    sender={item.latestMessage?.sender ?? {} as IUserDTO}
                     ultimoMensaje={item.latestMessage?.content ?? ""}
                     admin={item.groupAdmin} 
                     active={isActive(item._id)}

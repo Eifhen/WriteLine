@@ -1,0 +1,32 @@
+
+
+
+
+.emoji-picker {
+ 
+  width: auto;
+  height: 0;
+  overflow: hidden;
+  border-radius: 25px;
+  position: fixed;
+  bottom: 8%;
+  
+  transition: all ease-in-out 0.2s; 
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-picker > * {
+  height: 0;
+}
+
+.emoji-picker.show-emoji-picker,
+.emoji-picker.show-emoji-picker > * {
+  height: 435px;
+}
+
+.emoji-picker.show-emoji-picker {
+  border: 2px solid var(--blue300);
+}

@@ -1,20 +1,28 @@
-import { IImageRecord, useUserImage } from "../../../../hooks/useUserImage";
 import IMessageModel from "../../../../models/MessageModel"
-
+import UserIcon from '../../../../assets/images/user_icon2.png';
 
 
 
 interface IMessageCardImage {
   data:IMessageModel;
-  image: string
+  image: string;
+  operation?: () => void;
 }
 
 export default function MessageCardImage (props:IMessageCardImage){
-  const { image } = props;
+  const { image, data } = props;
+
+  const name = `${data.sender.nombre} ${data.sender.apellido}`;
+
+  const operation = () => {
+    if(props.operation){
+      props.operation();
+    }
+  }
 
   return (
-    <div className="message_card_image">
-      <img src={image} alt="user image" />
+    <div title={name} className="message_card_image hover-fade trans-all-0-5s pointer" onClick={operation}>
+      <img src={image ?? UserIcon} alt="user image" />
     </div>
   )
 }

@@ -33,6 +33,7 @@ class SignInService implements ISignInService {
       __filename
     );
   }
+
 }
 
 const SignInServices = new SignInService();

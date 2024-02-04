@@ -1,0 +1,182 @@
+.config-modal {
+  height: 500px;
+  width: 35%;
+  background-color: var(--pure);
+  box-shadow: var(--shadow-lg);
+  position: fixed;
+  bottom: -100vh; 
+  left: 7px;
+  border-radius: 10px;
+  border: 0.5px solid var(--gray-white);
+  z-index: 20;
+
+  transition: all 0.4s ease-in-out;
+  display: grid;
+  grid-template-columns: 35% 65%;
+  grid-template-areas: "config_modal_panel config_modal_content";
+  grid-template-rows: 100%;
+  overflow: hidden;
+}
+
+.open-config-modal {
+  bottom: 7px;
+}
+
+.config-modal .close-modal {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  font-size: 22px;
+  color: var(--gray-dark);
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+/**************************
+  Modal Panel
+***************************/
+
+.config-modal .config-modal-panel {
+  grid-area: config_modal_panel;
+  background-color: var(--gray-white);
+}
+
+.config-modal .config-modal-panel ul {
+  list-style: none;
+  padding: 1rem 6px;
+  
+}
+
+.config-modal .config-modal-panel ul li {
+  border-radius: 6px;
+  margin-bottom: 10px;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--blue600)
+}
+
+.config-modal .config-modal-panel ul li:hover {
+  background-color: var(--blue200);
+}
+
+
+.config-modal .config-modal-panel ul li.active {
+  background-color: var(--blue200);
+  position: relative;
+}
+
+
+.config-modal .config-modal-panel ul li.active:after{
+  content: "";
+  position: absolute;
+  left:0;
+  margin: auto 0;
+  border-radius: 25%;
+  height: 20px;
+  width: 4px;
+  background-color: var(--blue400);
+}
+
+.config-modal .config-modal-panel ul li i {
+  font-size: 20px;
+  font-weight: normal;
+  margin: 0 1rem 0 0.3rem;
+ 
+}
+
+/**************************
+  Modal Content
+***************************/
+.config-modal .config-modal-content {
+  grid-area: config_modal_content;
+}
+
+
+/*******************************
+  Modal Content [ Config Panel ]
+*******************************/
+.config-modal .config-modal-content .config-panel {
+  height: 100%;
+  display:grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    25%
+    75%
+  ;
+  grid-template-areas: 
+    "config_panel_title"
+    "config_panel_content"
+  ;
+}
+
+.config-modal .config-modal-content .config-panel .config-panel-title {
+  grid-area: config_panel_title;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+.config-modal .config-modal-content .config-panel .config-panel-title h1 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 28px;
+  color: var(--blue700);
+  /* padding-left: 1rem;
+  border-left: 4px solid var(--blue700); */
+}
+
+.config-modal .config-modal-content .config-panel .config-panel-content {
+  grid-area: config_panel_content;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 1rem;
+}
+
+/*******************************
+  Modal Content [ PROFILE ]
+*******************************/
+
+.config-modal .config-modal-content .config-profile {
+  height: 100%;
+  display:grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 
+    30%
+    70%
+  ;
+  grid-template-areas: 
+    "config_user_img"
+    "config_profile_content"
+  ;
+}
+
+.config-modal .config-modal-content .config-profile .config-user-img {
+  grid-area: config_user_img;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+.config-modal .config-modal-content .config-profile .config-profile-content {
+  grid-area: config_profile_content;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+
+.config-modal .config-modal-content .config-profile .config-profile-content .config-profile-inputs {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+

@@ -50,7 +50,19 @@ UserController.post("/", async (req:WriteLineRequest, res:Response, next:NextFun
   catch(err:any){
     next(err);
   }
-})
+});
+
+
+// UpdatePassword
+UserController.put("/change-password", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
+  try {
+    const data = await UserServices.UpdatePassword(req);
+    return res.status(CodigoHTTP.OK).json(data);
+  }
+  catch(err:any){
+    next(err);
+  }
+});
 
 // UpdateUser
 UserController.put("/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=>{
@@ -62,7 +74,7 @@ UserController.put("/:id", async (req:WriteLineRequest, res:Response, next:NextF
   catch(err:any){
     next(err);
   }
-})
+});
 
 //DeleteUser
 UserController.delete("/:id", async (req:WriteLineRequest, res:Response, next:NextFunction)=> {

@@ -17,7 +17,7 @@ export function DecodeJWToken(token: string) {
   try {
     const tk = token.split(" ")[1]; // quitamos el Bearer
     const decoded = jwt.verify(tk, SECRET);
-    console.log("Decoded =>", decoded, __filename);
+    // console.log("Decoded =>", decoded, __filename);
     return decoded;
   } catch (error:any) {
     throw ErrorHandler(

@@ -1,16 +1,19 @@
 import React, { createContext, useContext, useState } from "react";
 import useGetCurrentUser from '../hooks/useGetCurrentUser';
 import IUserDTO from '../models/UserModel';
+import useSocketServer, { IUseSocketServer } from "../hooks/useSocketServer";
 
-interface IWriteLineContext {
+export interface IWriteLineContext {
   userData: IUserDTO;
-  setUserData: React.Dispatch<React.SetStateAction<IUserDTO>>
+  setUserData: React.Dispatch<React.SetStateAction<IUserDTO>>;
+  socketServer: IUseSocketServer;
 }
 
 export const WriteLineContext = createContext({} as IWriteLineContext);
 
 export const WriteLineContextProvider = ({children}:any) => {
   const [userData, setUserData] = useState({} as IUserDTO);
+  const socketServer = useSocketServer(userData);
 
   useGetCurrentUser((res)=> {
     setUserData(res);
@@ -19,7 +22,8 @@ export const WriteLineContextProvider = ({children}:any) => {
   
   const data: IWriteLineContext = {
     userData,
-    setUserData
+    setUserData,
+    socketServer
   }
 
   return (

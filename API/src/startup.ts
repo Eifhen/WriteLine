@@ -10,23 +10,28 @@ import ApiKeyManager from './Configuration/apikey.handler.config';
 import DatabaseManager from './Configuration/database.config';
 import { ConsoleWarning } from './Utilis/consoleColor';
 
+import { createServer as createHTTPServer } from "http";
+import SocketManager from './Configuration/socket.config';
+
 async function Startup(){
-  const server = express();
+  const app = express();
   const config = Configuration();
   const JsonHandler = express.json({limit:"10mb"});
   const ApiKeyHandler = ApiKeyManager(config);
   const RouterHandler = RouterManager(config);
-  const DatabaseHandler = DatabaseManager(config);
+  const server = createHTTPServer(app);
+  const port = config.port!;
+ 
+  DatabaseManager(config);
+  SocketManager(server);
   
-  server.use(CorsHandler);
-  server.use(ApiKeyHandler)
-  server.use(JsonHandler);
-  server.use("/api", RouterHandler);
-  server.use(RequestErrorHandler);
-    
-  await DatabaseHandler();
-
-  server.listen(5000, ()=> {
+  app.use(CorsHandler);
+  app.use(ApiKeyHandler)
+  app.use(JsonHandler);
+  app.use("/api", RouterHandler);
+  app.use(RequestErrorHandler);
+  
+  server.listen(port, ()=> {
     ConsoleWarning(`Server Started on PORT ${config.port}`);
   });
 } 

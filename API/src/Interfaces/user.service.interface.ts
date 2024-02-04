@@ -10,7 +10,8 @@ export default interface IUserService {
   GetUser(id:string):  Promise<IResponseHandler<IUserDTO>>;
   GetUsersById(ids:string[]) : Promise<IUserModel[]>;
   AddUser(user:IUserModel) : Promise<IResponseHandler<IUserModel>>;
-  UpdateUser(id:string, user:IUserModel) :  Promise<IResponseHandler<IUserModel>>;
+  UpdateUser(id:string, user:IUserModel) :  Promise<IResponseHandler<IUserDTO>>;
   DeleteUser(id:string): Promise<IResponseHandler<IUserModel>>;
   GetUserImage(id:string): Promise<IResponseHandler<string>>;
+  UpdatePassword(request:WriteLineRequest) : Promise<IResponseHandler<string>>;
 }

@@ -9,7 +9,7 @@ const ChatController = Router();
 ChatController.get("/", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.GetAllChats(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -20,7 +20,7 @@ ChatController.get("/", async (req:WriteLineRequest, res:Response, next:NextFunc
 ChatController.get("/access/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.AccessChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -31,7 +31,7 @@ ChatController.get("/access/:id", async (req:WriteLineRequest, res:Response, nex
 ChatController.post("/group/create", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.CreateGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -42,7 +42,7 @@ ChatController.post("/group/create", async (req:WriteLineRequest, res:Response, 
 ChatController.get("/group/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.AccessGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -53,7 +53,7 @@ ChatController.get("/group/:id", async (req:WriteLineRequest, res:Response, next
 ChatController.post("/group/rename/:id/:newName", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.RenameGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -64,7 +64,7 @@ ChatController.post("/group/rename/:id/:newName", async (req:WriteLineRequest, r
 ChatController.post("/group/:id/add-users", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.AddUsersToGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -75,7 +75,7 @@ ChatController.post("/group/:id/add-users", async (req:WriteLineRequest, res:Res
 ChatController.delete("/group/:id/remove-users", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.RemoveUsersFromGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -86,7 +86,7 @@ ChatController.delete("/group/:id/remove-users", async (req:WriteLineRequest, re
 ChatController.get("/actives", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.GetAllActiveChats(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -97,7 +97,7 @@ ChatController.get("/actives", async (req:WriteLineRequest, res:Response, next:N
 ChatController.put("/group/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.UpdateGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);
@@ -108,7 +108,7 @@ ChatController.put("/group/:id", async (req:WriteLineRequest, res:Response, next
 ChatController.delete("/group/:id", async (req:WriteLineRequest, res:Response, next:NextFunction) => {
   try {
     const service = await ChatService.DeleteGroupChat(req);
-    res.status(200).json(service);
+    return res.status(200).json(service);
   }
   catch(err){
     next(err);

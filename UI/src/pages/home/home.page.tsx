@@ -25,7 +25,7 @@ export default function HomePage() {
         <div className="home-buttons">
           <Button className="mr-1" title="Registrarse" operation={()=> toSignUp()} />
           <hr />
-          <Button className="bg-blue400 text-white ml-2" title="Ingresar" operation={()=> toLogIn()} />
+          <Button className="bg-blue400 text-white ml-2 pl-2 pr-2" title="Ingresar" operation={()=> toLogIn()} />
         </div>
       </div>
       <Footer className="home-footer" />

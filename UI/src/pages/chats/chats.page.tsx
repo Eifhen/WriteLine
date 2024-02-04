@@ -6,9 +6,8 @@ import './assets/chats.page.movil.css';
 import './assets/contact.card.desktop.css';
 import './assets/contact.input.desktop.css';
 import { useWriteLineContext } from '../../context/writeline.context';
-import ChatGroupModal, { IChatGroupModalExport } from './components/chatgroup_modal/chatgroup.modal';
+import ChatGroupModal, { IChatGroupModalExport } from './components/chatgroup_modal/chatgroup.modal.add';
 import ChatGroupModalEdit, { IChatGroupModalEditExport } from './components/chatgroup_modal/chatgroup.modal.edit';
-import objectIsNotEmpty from '../../utils/object_helpers';
 
 
 export default function ChatsPage() {
@@ -18,10 +17,7 @@ export default function ChatsPage() {
   const editGroupModalRef:MutableRefObject<IChatGroupModalEditExport> = useRef({} as IChatGroupModalEditExport);
   const context = useWriteLineContext();
   const currentUserGUID = context.userData.guid!;
-  const [reload, setReload] = useState<boolean>(false);
-
-  console.log("editRef =>", editGroupModalRef);
-  console.log("panelRef =>", panelRef);
+  const { socketServer } = context;
 
   return (
     <div className='chat-page'>
@@ -30,7 +26,8 @@ export default function ChatsPage() {
           ref={contactRef} 
           panelRef={panelRef} 
           chatGroupRef={chatGroupRef}
-          currentUserGUID={currentUserGUID} 
+          currentUserGUID={currentUserGUID}
+          socketServer={socketServer}
         />
       </div>
       <div className='chat-msg-panel'>
@@ -39,22 +36,22 @@ export default function ChatsPage() {
           editGroupModalRef={editGroupModalRef}
           contactItemRef={contactRef} 
           currentUserGUID={currentUserGUID}
+          socketServer={socketServer}
         />
       </div>
+
       <ChatGroupModal 
         ref={chatGroupRef} 
         panelRef={panelRef}
         contactRef={contactRef} 
       />
 
-      {objectIsNotEmpty(panelRef.current) && panelRef.current.panelOpen && (
-        <ChatGroupModalEdit 
-          ref={editGroupModalRef}
-          panelRef={panelRef} 
-          contactItemRef={contactRef}
-          currentUserGUID={currentUserGUID}
-        />
-      )}
+      <ChatGroupModalEdit 
+        ref={editGroupModalRef}
+        panelRef={panelRef} 
+        contactItemRef={contactRef}
+        currentUserGUID={currentUserGUID}
+      />
     </div>
   )
 }

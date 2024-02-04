@@ -11,16 +11,21 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",
+    "@emoji-mart/data": "^1.1.2",
+    "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@types/emoji-mart": "^3.0.14",
     "axios": "^1.6.2",
+    "emoji-mart": "^5.5.2",
     "framer-motion": "^10.16.16",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
-    "react-scrollable-feed": "^2.0.1"
+    "react-scrollable-feed": "^2.0.1",
+    "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",
