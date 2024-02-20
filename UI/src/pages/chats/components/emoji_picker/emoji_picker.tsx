@@ -1,5 +1,5 @@
 
-import { MutableRefObject, forwardRef, useRef, useState } from 'react';
+import { MutableRefObject, forwardRef, memo, useRef, useState } from 'react';
 import SmileFaceIcon from '../../../../components/smileFaceIcon/SmileFaceIcon';
 import './emoji_picker.css';
 import useOnOutsideClick from '../../../../hooks/useOnOutsideClick';
@@ -12,7 +12,7 @@ interface IEmojiPickerProps {
   messageBoxRef:MutableRefObject<IMessageBoxExport | null>
 }
 
-const EmojiPicker = forwardRef((props:IEmojiPickerProps, ref)=>{
+const EmojiPicker = memo(forwardRef((props:IEmojiPickerProps, ref)=>{
 
   const [show, setShow] = useState<boolean>(false);
   const smileIconRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -30,7 +30,7 @@ const EmojiPicker = forwardRef((props:IEmojiPickerProps, ref)=>{
     if(show){
       showEmojiPicker(false);
     }
-  },[])
+  },[]);
 
   return (
     <>
@@ -47,7 +47,7 @@ const EmojiPicker = forwardRef((props:IEmojiPickerProps, ref)=>{
       </div>
     </>
   )
-})
+}));
 
 
 EmojiPicker.displayName = 'EmojiPicker';

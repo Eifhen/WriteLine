@@ -12,6 +12,22 @@
   padding: 0 0.5rem;
   cursor: pointer;
   margin-top: 5px;
+  position: relative;
+  overflow: hidden;
+}
+.contact-item[data-notify="true"] {
+  position: relative;
+}
+
+.contact-item[data-notify="true"]::after {
+  content: ' ';
+  position: absolute;
+  top: 27%;
+  right: 10px;
+  border-radius: 50%;
+  background-color: red;
+  height: 8px;
+  width: 8px;
 }
 
 .contact-item:hover { 
@@ -58,7 +74,8 @@
   font-size: 13px;
   font-weight: 400;
   color: var(--blue800); /* #333333; */
-  width: 300px;
+  min-width: 100px;
+  max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

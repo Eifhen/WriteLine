@@ -76,12 +76,17 @@
 }
 
 .panel .panel-header .info-container .info-body p {
-  font-size: 14px;
+  font-size: 13px;
   margin:0;
   padding:0;
   color: var(--gray);
 }
 
+.panel .panel-header .info-container .info-body .is-typing {
+  font-size: 13px;
+  color: var(--blue400) !important;
+  font-weight: bold;
+}
 
 /*****************************
   Panel Body
@@ -91,6 +96,7 @@
   max-height: 82vh;
   grid-area: panel_body;
   background-color: var(--gray-white);
+  position: relative;
 }
 
 

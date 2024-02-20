@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, useRef, MutableRefObject } from 'react';
+import { forwardRef, useImperativeHandle, useState, useRef, MutableRefObject, useCallback } from 'react';
 import Logo from '../../../../components/Logo/logo.component';
 import { IContactBar } from '../contacts/contact.bar.component';
 import './panel.component.desktop.css';
@@ -14,13 +14,15 @@ import IMessageModel, { IMessageDTO } from '../../../../models/MessageModel';
 import { IImageRecord, useGetUsersImages } from '../../../../hooks/useUserImage';
 import ChatLoader from '../chat_loader/chat_loader';
 import EmojiPicker from '../emoji_picker/emoji_picker';
-import { IUseSocketServer } from '../../../../hooks/useSocketServer';
+import { WriteLineSocket } from '../../../../utils/channels.socket';
+import { broatcastMessage, emitUserIsTyping } from '../../../../utils/socketOperations';
+import useTypingIndicator from '../../../../hooks/useTypingIndicator';
 
 interface IPanelProps {
   contactItemRef?:MutableRefObject<IContactBar>;
   editGroupModalRef:MutableRefObject<IChatGroupModalEditExport>;
   currentUserGUID: string;
-  socketServer: IUseSocketServer;
+  socketServer: WriteLineSocket;
 }
 
 export interface IPanel {
@@ -35,6 +37,7 @@ export interface IPanel {
   images: IImageRecord;
   setMessages: React.Dispatch<React.SetStateAction<IMessageModel[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  updateReferences:(res:IMessageModel, updateMessages:boolean) => void;
 }
 
 const Panel = forwardRef((props:IPanelProps, ref) => {
@@ -44,12 +47,13 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
   const [messages, setMessages] = useState<IMessageModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [reload, setRelaod] = useState<boolean>(false);
+  const typingIndicator = useTypingIndicator(props.socketServer, activeItem);
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
   const messageBoxRef:MutableRefObject<IMessageBoxExport | null> = useRef(null);
   const images = useGetUsersImages(activeItem, [activeItem, reload]);
   const isGroupChat = activeItem.isGroupChat;
   const idChat = activeItem._id;  
-
+  
 
   const chatName = () => {
     if(activeItem.isGroupChat){
@@ -60,6 +64,12 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
   }
 
   const subTitle = () => {
+    if(typingIndicator.isTyping){
+      return activeItem.isGroupChat ?
+        `${typingIndicator.typingUser.nombre} ${typingIndicator.typingUser.apellido} está escribiendo...`
+        :
+        `Escribiendo...`;
+    }
     if(activeItem.isGroupChat){
       return activeItem.users.map(m => `${m.nombre} ${m.apellido}`).join(", ");
     }
@@ -81,7 +91,7 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     }
   }
 
-  const sendMessage = (message:string) => {
+  const sendMessage = useCallback((message:string) => {
     if(message.trimEnd() != ''){
       const data:IMessageDTO = {
         idChat,
@@ -91,28 +101,8 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
       messageBoxRef.current?.setDisabled(true);
       MessageService.SendMessage(data)
       .then((res) => {
-        props?.contactItemRef?.current?.setActiveItem((prev:IChatModel)=>{
-          prev.latestMessage = prev.latestMessage || {} as IMessageModel;
-          prev.latestMessage.content = res.content;
-          prev.latestMessage.sender = res.sender;
-          prev.latestMessage.chat = res.chat;
-          prev.latestMessage.date = res.date;
-          return {...prev};
-        })
-        
-        props.contactItemRef?.current.setActiveChats((prev:IChatModel[]) => {
-          const find =  prev.find(m => m._id === res.chat._id);
-          if(find){
-            find.latestMessage = find.latestMessage || {} as IMessageModel; 
-            find.latestMessage.content = res.content;
-            find.latestMessage.sender = res.sender;
-            find.latestMessage.chat = res.chat;
-            find.latestMessage.date = res.date;
-          }
-          return prev;
-        });
-
-        setMessages((prev)=>([...prev, res]))
+        updateReferences(res, true);
+        broatcastMessage(props.socketServer, res);
       })
       .catch(err => {
         notify(err.message,"error");
@@ -121,20 +111,45 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
       .finally(()=>{
         clearForm();
         messageBoxRef.current?.resetInput();
+        emitUserIsTyping(
+          props.socketServer, 
+          activeItem._id, 
+          props.currentUserGUID,
+          false
+        );
       })
     }
     else {
       clearForm();
       messageBoxRef.current?.resetInput();
     }
+  },[activeItem, props.socketServer])
+
+  const updateReferences = (res:IMessageModel, updateMessages:boolean) => {
+    props.contactItemRef?.current.setActiveChats((prev:IChatModel[]) => {
+      const find =  prev.find(m => m._id === res.chat._id);
+      if(find){
+        find.latestMessage = {} as IMessageModel; 
+        find.latestMessage.content = res.content;
+        find.latestMessage.sender = res.sender;
+        find.latestMessage.chat = res.chat;
+        find.latestMessage.date = res.date;
+        find.hasNewMessages = !updateMessages;
+      }
+      return [...prev];
+    });
+
+    if(updateMessages){
+      setMessages((prev)=>([...prev, res]));
+    }
   }
 
-  const getImage = (guid:string) => {
+  const getImage = useCallback((guid:string) => {
     if(isGroupChat && guid) {
       return images[guid];
     }
     return image;
-  }
+  },[activeItem, images]);
 
   useImperativeHandle(ref, () : IPanel =>({
     chatName,
@@ -147,7 +162,8 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
     images,
     setRelaod,
     setMessages,
-    setIsLoading
+    setIsLoading,
+    updateReferences
   }));
 
   return(
@@ -159,16 +175,18 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
             <img src={image} alt="" />
             <div className="info-body">
               <h1 title={chatName()}>{chatName()}</h1>
-              <p title={subTitle()} className='text-trucante w-800px text-blue800 '>{subTitle()}</p>
+              <p title={subTitle()} className={`text-trucante w-800px text-blue800 ${typingIndicator.isTyping && 'is-typing'}`}>
+                {subTitle()}
+              </p>
             </div>
           </div>
         </div>
         <div className="panel-body">
           <ChatLoader isLoading={isLoading}>
             <MessageCard
-              isGroupChat={isGroupChat} 
               getImage={getImage}
               messages={messages} 
+              activeChat={activeItem}
               currentUserGUID={props.currentUserGUID}  
             />
           </ChatLoader>
@@ -184,6 +202,9 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
               ref={messageBoxRef}
               disabled={false}
               sendMessage={sendMessage} 
+              socketServer={props.socketServer}
+              selectedChatId={activeItem._id}
+              currentUserGUID={props.currentUserGUID}
             />
           </div>
           <button className='send-btn'>

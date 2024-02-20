@@ -43,7 +43,7 @@ class MessageServices implements IMessageService {
           chat.latestMessage = addedMessage;
           await chat.save();
 
-          return ResponseHandler<any>(addedMessage, MensajeHTTP.OK);
+          return ResponseHandler<IMessageModel>(addedMessage, MensajeHTTP.OK);
         }
 
         throw ErrorHandler(CodigoHTTP.NotFound, "No se encontro un chat con este id", __filename);

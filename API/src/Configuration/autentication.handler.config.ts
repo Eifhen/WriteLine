@@ -36,8 +36,8 @@ export default function AutenticationManager (config:IConfiguracion) : RequestHa
       throw ErrorHandler(CodigoHTTP.Unauthorized, `Sin Token: ${token}`, __filename);
     }
     catch(err:any){
-      throw ErrorHandler(err.status, err.message, err.path);
-      //next(err);
+      //throw ErrorHandler(err.status, err.message, err.path);
+      next(err);
     }
   }
 }

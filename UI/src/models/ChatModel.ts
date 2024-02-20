@@ -11,6 +11,7 @@ export interface IChatModel {
   groupAdmin?: IUserDTO;
   creationDate: Date;
   users: IUserDTO[];
+  hasNewMessages?: boolean;
 }
 
 

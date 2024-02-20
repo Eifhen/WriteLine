@@ -206,6 +206,11 @@ class ChatServices implements IChatService {
           const updatedChat = await chat.save();
           await updatedChat.populate("users", "-password"); 
           await updatedChat.populate("groupAdmin", "-password");
+          await updatedChat.populate("latestMessage");
+          await UserModel.populate(updatedChat, {
+            path: "latestMessage.sender",
+            select: "nombre apellido image email guid"
+          });
 
           const orderedChat = OrderUsers(updatedChat);
 
@@ -311,6 +316,11 @@ class ChatServices implements IChatService {
           const updatedChat = await chat.save();
           await updatedChat.populate("users", "-password");
           await updatedChat.populate("groupAdmin", "-password");
+          await updatedChat.populate("latestMessage");
+          await UserModel.populate(updatedChat, {
+            path: "latestMessage.sender",
+            select: "nombre apellido image email guid"
+          });
 
           const orderedChat = OrderUsers(updatedChat);
 

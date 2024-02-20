@@ -22,6 +22,8 @@ import UserTags from "../../../../components/UserTags/userTags.component";
 import { IPanel } from "../panel/panel.component";
 import objectIsNotEmpty from "../../../../utils/object_helpers";
 import { IImageRecord } from "../../../../hooks/useUserImage";
+import { useWriteLineContext } from "../../../../context/writeline.context";
+import { GroupChatOperations, emitUpdateGroupChat } from "../../../../utils/socketOperations";
 
 export interface IChatGroupModalEditExport {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,7 +57,8 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
   const [chatName, setChatName] = useState<string>('');
   const [chatDate, setChatDate] = useState<Date>(new Date());
   const [item, setItem] = useState<IChatModel>({} as IChatModel);
-
+  const { socketServer } = useWriteLineContext();
+  const getAllUsers = [...currentUsers, ...removedUsers]; 
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
   const inputs = useGroupInputs({
     className: `
@@ -153,6 +156,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
           } 
           ChatService.AddUsers(props.panelRef?.current?.activeItem._id, data)
           .then(res => {
+            emitUpdateGroupChat(socketServer, selectedUsers, res, GroupChatOperations.ADD);
             setIsAddingUser(false);
             setCurrentUsers(res.users);
             setSelectedUsers([]);
@@ -203,6 +207,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
         ChatService.UpdateGroup(props.panelRef.current?.activeItem._id, data)
         .then((res)=> {
           setCurrentUsers(res.users);
+          emitUpdateGroupChat(socketServer, getAllUsers, res, GroupChatOperations.UPDATE);
           props?.panelRef?.current.setActiveItem(res);
           props.contactItemRef?.current.setActiveChats((prev)=> {
             const index = prev.findIndex((m) => m._id === res._id);
@@ -260,7 +265,8 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
       const group = props.panelRef?.current.activeItem
       ChatService.DeleteGroup(group._id)
       .then(()=> {
-        notify(`El grupo <<${group.name}>> fue eliminado exitosamente!`, "success");
+        notify(`El grupo [ ${group.name} ] fue eliminado exitosamente!`, "success");
+        emitUpdateGroupChat(socketServer, currentUsers, group, GroupChatOperations.DELETE);
         props.contactItemRef?.current.setActiveChats((prev)=> {
           return prev.filter(m => m._id !== group._id);
         });

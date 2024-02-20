@@ -4,10 +4,10 @@ import HTTP from "../HttpService/HTTPService";
 class ChatServices {
 
   GetActiveChats(){
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve:(chats:IChatModel[]) => void, reject)=>{
       HTTP.Get(`/chats/actives`)
-      .then((res)=>{
-        resolve(res);
+      .then((res:any)=>{
+        resolve(res.data as IChatModel[]);
       })
       .catch((err)=> {
         reject(err);

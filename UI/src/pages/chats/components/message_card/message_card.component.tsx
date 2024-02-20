@@ -1,17 +1,15 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, memo, useImperativeHandle } from "react";
 import IMessageModel from "../../../../models/MessageModel";
 import ScrollableFeed from "react-scrollable-feed";
 import './message_card.component.css';
 import MessageCardImage from "./message_card_image";
-import { IImageRecord } from "../../../../hooks/useUserImage";
-
-
+import { IChatModel } from "../../../../models/ChatModel";
 
 interface IMessageCard {
   messages: IMessageModel[]
   currentUserGUID: string;
-  isGroupChat: boolean;
   getImage: (guid:string) => string;
+  activeChat: IChatModel
 }
 
 interface IMessageCardExport {
@@ -19,9 +17,10 @@ interface IMessageCardExport {
   isLastMessage: () => boolean;
 }
 
-const MessageCard = forwardRef((props:IMessageCard, ref) => {
+const MessageCard = memo(forwardRef((props:IMessageCard, ref) => {
   
-  const { messages, currentUserGUID, isGroupChat } = props;
+  const { messages, currentUserGUID, activeChat} = props;
+  const isGroupChat = activeChat.isGroupChat;
 
   const isSameSender = (currentMessage:IMessageModel, currentMessageIndex:number ) => {
     return (
@@ -42,28 +41,7 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
   }
 
   const messageAlignment = (currentMessage:IMessageModel, currentMessageIndex:number) => {
-
-    // if(
-    //   currentMessageIndex < messages.length - 1 &&
-    //   messages[currentMessageIndex + 1].sender.guid === currentMessage.sender.guid &&
-    //   messages[currentMessageIndex].sender.guid !== currentUserGUID
-    // ){
-    //   return "ml-1";
-    // }
-    // else if (
-    //   (currentMessageIndex < messages.length - 1 && 
-    //    messages[currentMessageIndex + 1].sender.guid !== currentMessage.sender.guid &&
-    //    messages[currentMessageIndex].sender.guid !== currentUserGUID) || 
-    //    (currentMessageIndex === messages.length - 1 && 
-    //     messages[currentMessageIndex].sender.guid !== currentUserGUID)
-    // ){
-    //   return "ml-0";
-    // }
-    // else 
-    //   return "ml-auto";
-
     return currentMessage.sender.guid === currentUserGUID ? "align-self-end" : ''
-
   }
 
   const marginTop = (currentMessage:IMessageModel, currentMessageIndex:number) => {
@@ -88,20 +66,20 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
     return '';
   }
 
-
   useImperativeHandle(ref, ()=>({
     isSameSender,
     isLastMessage
   } as IMessageCardExport));
 
   return (
-    <ScrollableFeed forceScroll={true} className="h-100">
+    <ScrollableFeed className="h-100" forceScroll={true}>
       <div className="p-1 d-flex flex-column ">
        {messages && messages.map((data, index)=>(
           <div className={`message_card ${messageAlignment(data, index)} ${marginTop(data, index)}`} key={index}>
             {(isSameSender(data, index) || isLastMessage(index)) && (
               <MessageCardImage 
-                data={data} 
+                data={data}
+                withName={true} 
                 image={props.getImage(data.sender.guid!)}
               />
             )}
@@ -120,7 +98,7 @@ const MessageCard = forwardRef((props:IMessageCard, ref) => {
       </div>
     </ScrollableFeed>
   )
-})
+}));
 
 MessageCard.displayName = "MessageCard";
 export default MessageCard;

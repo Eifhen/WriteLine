@@ -14,6 +14,7 @@ interface IContactCard {
   users:IUserDTO[];
   sender: IUserDTO;
   currentUserGUID:string;
+  hasNewMessage?:boolean;
 }
 
 interface ChatCardImage {
@@ -100,9 +101,13 @@ export default function ChatCard(props:IContactCard){
   }, [users, currentUserGUID, isGroupChat]);
 
   return (
-    <div className={`contact-item ${props.active}`} onClick={()=> props.operation(getImage())}>
+    <div 
+      data-notify={props.hasNewMessage} 
+      className={`contact-item ${props.active}`} 
+      onClick={()=> props.operation(getImage())}
+    >
       <img src={getImage()}  alt="" />
-      <div className='contact-item-info'>
+      <div className='contact-item-info' >
         <h1 title={chatName()}>{chatName()}</h1>
         {renderMsg()}        
       </div>

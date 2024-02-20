@@ -13,13 +13,20 @@ import UserCard from '../user_card/user.card.component';
 import ChatService from '../../../../services/ChatService/chat.service';
 import { IChatGroupModalExport } from '../chatgroup_modal/chatgroup.modal.add';
 import { getAllMessages } from '../../../../hooks/useAllMessages';
-import { IUseSocketServer } from '../../../../hooks/useSocketServer';
+import { WriteLineSocket } from '../../../../utils/channels.socket';
+import { GroupChatOperations, joinChat } from '../../../../utils/socketOperations';
+import IMessageModel from '../../../../models/MessageModel';
+import { useOnMessageReceived } from '../../../../hooks/useOnMessageReceived';
+import objectIsNotEmpty from '../../../../utils/object_helpers';
+import useOnChatIsUpdated from '../../../../hooks/useOnChatIsUpdated';
+import useJoinToAllActiveChats from '../../../../hooks/useJoinToAllActiveChats';
+
 
 interface IContactBarProps {
   panelRef?: MutableRefObject<IPanel>
   chatGroupRef?:MutableRefObject<IChatGroupModalExport>
   currentUserGUID: string;
-  socketServer: IUseSocketServer;
+  socketServer: WriteLineSocket;
 }
 export interface IContactBar {
   activeItem: IChatModel;
@@ -37,21 +44,26 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
   const [searchedUsers, setSearchedUsers] = useState<IUserDTO[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isLoading, setIsloading] = useState<boolean>(true);
-  
+
   const searchInputRef:MutableRefObject<SearchInput> = useRef(null);
   const { currentUserGUID } = props;
 
-  const isActive = (id:string) : 'active'|'' => {
-    return activeItem._id === id ? "active" : '';
-  }
-
-  const itemIsActive = (id:string) => {
-    return activeItem._id === id;
-  }
+  const isActive = (id:string) : 'active'|'' => activeItem._id === id ? "active" : '';
+  const itemIsActive = (id:string) => activeItem._id === id;
+  
 
   const handleActiveItem = (item:IChatModel, base64:string) => {
-    if(!itemIsActive(item._id)){ // se aplica para impedir re-ejecución al dar click al mismo item
-      setActiveItem(item);
+     // se aplica para impedir re-ejecución al dar click al mismo item
+    if(!itemIsActive(item._id)){
+      setActiveItem({...item, hasNewMessages:false});
+      setActiveChats((prev)=> {
+        const find = prev.find(m => m._id === item._id);
+        if(find){
+          find.hasNewMessages = false;
+        } 
+        return [...prev];
+      });
+
       if(props.panelRef){
         props.panelRef?.current?.setIsLoading(true);
         getAllMessages(item._id, (messages)=>{
@@ -59,10 +71,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
           props.panelRef?.current?.setActiveItem(item);
           props.panelRef?.current?.setMessages(messages);
           props.panelRef?.current?.setImage(base64);
-          props.panelRef?.current?.setIsLoading(false);
-          
-          props.socketServer.joinChat(item._id);
-          props.socketServer.setChat(item);
+          props.panelRef?.current?.setIsLoading(false); 
         })
       }
     }
@@ -117,7 +126,93 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
       searchInputRef.current.value = '';
     }
   }
+  
+  useActiveChats((chats)=>{
+    setActiveChats(chats);
+    setIsloading(false);
+  },[]);
+
+  useJoinToAllActiveChats(props.socketServer, props.currentUserGUID, activeChats);
+
+  useOnMessageReceived(props.socketServer, (receivedMessage:IMessageModel)=>{
+    if(objectIsNotEmpty(props.panelRef?.current)){
+      const isActive = objectIsNotEmpty(activeItem);
+      const chatsAreEqual = activeItem._id === receivedMessage.chat._id;
+      const updateMessages = isActive && chatsAreEqual;
+      props.panelRef?.current.updateReferences(receivedMessage, updateMessages);
+    }
+  }, [props.socketServer, activeItem]);
+
  
+  useOnChatIsUpdated(props.socketServer, (destinatario, updatedChat, operation)=>{
+    if(objectIsNotEmpty(props.panelRef?.current) && updatedChat.isGroupChat){
+      const userIsInChat = updatedChat.users.some(m => m.guid === destinatario);
+      const updatedChatIsActiveItem = updatedChat._id === activeItem._id;
+      
+      if(operation === GroupChatOperations.ADD){
+        // Si el usuario no se encuentra en el chat entonces agrega el chat a la lista de chats activos
+        setActiveChats((prev)=> ([...prev, updatedChat]));
+        // une al usuario al chat
+        joinChat(props.socketServer, {
+          chatId: updatedChat._id, 
+          guid: currentUserGUID 
+        });
+      }
+
+      if(operation === GroupChatOperations.UPDATE){
+        if(!userIsInChat){
+          // Si el usuario fue removido de un chat y ese chat ese el chat activo
+          // entonces cierro el panel, envio el notify y cambio el activeItem a un objeto vacío 
+  
+          if(updatedChatIsActiveItem){
+            props.panelRef?.current.setPanelOpen(false);
+            setActiveItem({} as IChatModel);
+            notify(`Has sido removido del grupo ${updatedChat.name}`,'info');
+          }
+  
+          // Si el usuario fue removido de un chat y ese chat no es el chat activo
+          // entonces simplemente actualizo los chats, removiendo dicho chat de los chats activos
+          setActiveChats(prev => prev.filter(m => m._id !== updatedChat._id));
+        } else {
+
+          // Si el usuario actual no fue removido, simplemente actualiza 
+          // los chats activos y el chat actual
+          // si el chat actualizado es el chat activo entonces actualizo el chat activo
+          if(updatedChatIsActiveItem){
+            setActiveItem(updatedChat);
+          }
+
+          setActiveChats((prev)=> {
+            const index = prev.findIndex((m) => m._id === updatedChat._id);
+            // Si el usuario ya se encuentra en el chat lo actualiza
+            if (index !== -1) {
+              const updatedChats = [...prev];
+              updatedChats[index] = updatedChat; // Reemplaza el chat existente con el actualizado
+              return updatedChats;
+            }
+            // Si el usuario no se encuentra en el chat entonces agrega el chat a la lista de chats activos
+            return [...prev, updatedChat];
+          });
+        }
+      }
+
+      if(operation === GroupChatOperations.DELETE){
+        // Si el usuario fue removido de un chat y ese chat ese el chat activo
+        // entonces cierro el panel, envio el notify y cambio el activeItem a un objeto vacío 
+
+        if(updatedChatIsActiveItem){
+          props.panelRef?.current.setPanelOpen(false);
+          setActiveItem({} as IChatModel);
+          notify(`El grupo ${updatedChat.name} ha sido eliminado`,'warning');
+        }
+
+        // Si el usuario fue removido de un chat y ese chat no es el chat activo
+        // entonces simplemente actualizo los chats, removiendo dicho chat de los chats activos
+        setActiveChats(prev => prev.filter(m => m._id !== updatedChat._id));
+      }
+    }
+  },[props.socketServer, activeItem]);
+  
   useImperativeHandle(ref, () : IContactBar =>({
     activeItem,
     setActiveItem,
@@ -125,12 +220,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
     setActiveChats,
     handleActiveItem,
   }));
-
-  useActiveChats((chats)=>{
-    setActiveChats(chats);
-    setIsloading(false);
-  },[]);
-
+  
   return (
     <>
       <div className="contactbar">
@@ -187,6 +277,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
                     isGroupChat={item.isGroupChat}
                     currentUserGUID={currentUserGUID}
                     operation={(base64) => handleActiveItem(item, base64)}
+                    hasNewMessage={item.hasNewMessages}
                   />
                 ))
               ) : (
@@ -198,7 +289,6 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
           </ContactLoader>
         </div>
       </div>
-     
     </>
   )
 });

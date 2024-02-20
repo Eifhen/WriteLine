@@ -7,12 +7,13 @@ interface IMessageCardImage {
   data:IMessageModel;
   image: string;
   operation?: () => void;
+  withName:boolean;
 }
 
 export default function MessageCardImage (props:IMessageCardImage){
   const { image, data } = props;
 
-  const name = `${data.sender.nombre} ${data.sender.apellido}`;
+  const name = props.withName ? `${data.sender.nombre} ${data.sender.apellido}` : '';
 
   const operation = () => {
     if(props.operation){

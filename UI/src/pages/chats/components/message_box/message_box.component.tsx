@@ -1,10 +1,16 @@
-import { ForwardedRef, MutableRefObject, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { ForwardedRef, MutableRefObject, forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { CLIENT_CHANNEL, WriteLineSocket } from '../../../../utils/channels.socket';
+import useIsTyping from '../../../../hooks/useIsTyping';
+import { emitUserIsTyping, stopTypingInterval } from '../../../../utils/socketOperations';
 
 
 
 export interface IMessageBox {
   disabled: boolean;
-  sendMessage: (message: string) => void
+  sendMessage: (message: string) => void;
+  socketServer: WriteLineSocket;
+  selectedChatId: string;
+  currentUserGUID:string;
 }
 
 export interface IMessageBoxExport {
@@ -23,20 +29,26 @@ interface ICursorPosition {
   end:number | null;
 }
 
-const MessageBox = forwardRef((props:IMessageBox, ref:ForwardedRef<IMessageBoxExport>)=>{
+const MessageBox = memo(forwardRef((props:IMessageBox, ref:ForwardedRef<IMessageBoxExport>)=>{
   const [message, setMessage] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(props.disabled);
   const [cursorPosition, setCursorPosition] = useState<ICursorPosition>({} as ICursorPosition);
   const inputRef:MutableRefObject<HTMLTextAreaElement|null> = useRef(null);
-
+  const timerLength = 3000;
+  let typingTimer: NodeJS.Timeout | null = null;
+ 
   const handleChange = (event:any) =>{
     setMessage(event.target.value);
     handleCursor();
-    adjustTextareaHeight() // ajusta la altura del textarea cuando el valor cambia
+    adjustTextareaHeight(); // ajusta la altura del textarea cuando el valor cambia
+
+    emitUserIsTyping(props.socketServer, props.selectedChatId, props.currentUserGUID, true);
+    stopTypingInterval(props.socketServer, props.selectedChatId, props.currentUserGUID, typingTimer, timerLength);
   }
 
   const handleEmojiMessage = (emoji:string) => {
-    setMessage((prev) => prev + emoji);
+
+    //setMessage((prev) => prev + emoji);
     const input = inputRef.current;
     if(input){
       // Esto se hace para conservar la posición del cursor al agregar el emogi
@@ -54,6 +66,10 @@ const MessageBox = forwardRef((props:IMessageBox, ref:ForwardedRef<IMessageBoxEx
           start: lastEmojiPosition,
           end: lastEmojiPosition,
       })); 
+      
+      // Al agregar el emogi indicamos al receptor que el usuario está escribiendo
+      emitUserIsTyping(props.socketServer, props.selectedChatId, props.currentUserGUID, true);
+      stopTypingInterval(props.socketServer, props.selectedChatId, props.currentUserGUID, typingTimer, timerLength);
     }
   }
 
@@ -127,6 +143,7 @@ const MessageBox = forwardRef((props:IMessageBox, ref:ForwardedRef<IMessageBoxEx
   } as IMessageBoxExport));
 
   return (
+   <>
     <textarea
       rows={1} 
       name="messageBox" 
@@ -145,8 +162,9 @@ const MessageBox = forwardRef((props:IMessageBox, ref:ForwardedRef<IMessageBoxEx
       value={message}
       disabled={ disabled }
     />
+   </>
   );
-});
+}));
 
 MessageBox.displayName = "MessageBox";
 export default MessageBox;

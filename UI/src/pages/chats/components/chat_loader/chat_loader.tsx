@@ -1,4 +1,5 @@
 import { Skeleton, Spinner, Stack } from "@chakra-ui/react";
+import { memo } from "react";
 
 
 
@@ -7,14 +8,22 @@ interface IChatLoader {
   children:JSX.Element[] | JSX.Element;
 }
 
-export default function ChatLoader(props:IChatLoader){
+const ChatLoader = memo((props:IChatLoader) => {
   return(
     <>
       {props.isLoading ? (
-        <div className="h-100 align-center"></div>
+        <div className="h-100 align-center">
+          <Spinner 
+            thickness='4px'
+            color="blue.300"
+            size='xl'
+          />
+        </div>
       ) :(
         props.children
       )}
     </>
   )
-}
+});
+
+export default ChatLoader;

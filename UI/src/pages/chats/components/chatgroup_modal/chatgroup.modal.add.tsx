@@ -15,6 +15,8 @@ import { IGroupChatDTO } from "../../../../models/ChatModel";
 import ChatService from "../../../../services/ChatService/chat.service";
 import CloseIcon from "../../../../components/closeIcon/closeIcon.component";
 import UserTags from "../../../../components/UserTags/userTags.component";
+import { useWriteLineContext } from "../../../../context/writeline.context";
+import { GroupChatOperations, emitUpdateGroupChat } from "../../../../utils/socketOperations";
 
 export interface IChatGroupModalExport {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +36,7 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
   const [userLoader, setUserLoader] = useState<boolean>(true);
   const [showError, setShowError] = useState<boolean>(false);
   const formRef: MutableRefObject<HTMLFormElement | null> = useRef(null);
+  const { socketServer } = useWriteLineContext();
   const inputs = useGroupInputs();
 
   const ModalInit = () => {
@@ -89,6 +92,7 @@ const ChatGroupModal = forwardRef((props:IChatGroupModalProps, ref) => {
 
       ChatService.CreateGroupChat(group)
       .then((res:any)=>{
+        emitUpdateGroupChat(socketServer, selectedUsers, res, GroupChatOperations.ADD);
         props.contactRef?.current.setActiveChats((prev)=>{
           return [res, ...prev];
         })

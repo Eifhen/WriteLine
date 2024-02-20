@@ -10,6 +10,7 @@ import IUserDTO, { ToUserDTO, validateUserDTO } from "../DTO/user.dto";
 import ImageManager from '../Utilis/image.manager';
 import IImageManager from "../Interfaces/image.manager.interface";
 import TransactionManager from "../Utilis/transaction.manager";
+import { SearchCommands } from "../Utilis/enums";
 
 export class UserService implements IUserService {
 
@@ -35,18 +36,25 @@ export class UserService implements IUserService {
     try {
       const current = req.currentUser!;
       const { search } = req.query;
-      const keywords = {
-        $or:[
-          { nombre: {$regex: search ?? '', $options: 'i' } },
-          { email: {$regex: search ?? '', $options: 'i' }}
-        ]
-      };
-  
-      // busca los usuarios que cuyo email o nombre corresponda a la keyword enviada por el queryString
-      // excepto el usuario actual logeado.
-      const users:IUserModel[] = await UserModel.find(keywords).find({ _id: { $ne: current._id }}).lean().exec();
-      const usersDTO:IUserDTO[] = users.map(u => ToUserDTO(u));
-      return ResponseHandler<IUserDTO[]>(usersDTO, MensajeHTTP.OK);
+      if(search === SearchCommands.All){
+        const find:IUserModel[] | null = await UserModel.find({ _id: { $ne: current._id }}).lean().exec();
+        const usersDTO:IUserDTO[] = find.map(u => ToUserDTO(u));
+        return ResponseHandler<IUserDTO[]>(usersDTO, MensajeHTTP.OK);
+      }
+      else {
+        const keywords = {
+          $or:[
+            { nombre: {$regex: search ?? '', $options: 'i' } },
+            { email: {$regex: search ?? '', $options: 'i' }}
+          ]
+        };
+    
+        // busca los usuarios que cuyo email o nombre corresponda a la keyword enviada por el queryString
+        // excepto el usuario actual logeado.
+        const users:IUserModel[] = await UserModel.find(keywords).find({ _id: { $ne: current._id }}).lean().exec();
+        const usersDTO:IUserDTO[] = users.map(u => ToUserDTO(u));
+        return ResponseHandler<IUserDTO[]>(usersDTO, MensajeHTTP.OK);
+      }
     }
     catch(err:any){
       throw ErrorHandler(CodigoHTTP.InternalServerError, '', __filename);
