@@ -2,8 +2,6 @@ import { ForwardedRef, MutableRefObject, forwardRef, memo, useEffect, useImperat
 import { WriteLineSocket } from '../../../../utils/channels.socket';
 import { emitUserIsTyping, stopTypingInterval } from '../../../../utils/socketOperations';
 
-
-
 export interface IMessageBox {
   disabled: boolean;
   sendMessage: (message: string) => void;
@@ -11,7 +9,6 @@ export interface IMessageBox {
   selectedChatId: string;
   currentUserGUID:string;
 }
-
 export interface IMessageBoxExport {
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,7 +19,6 @@ export interface IMessageBoxExport {
   resetInput: () => void;
   handleEmojiMessage: (emoji: string) => void
 }
-
 interface ICursorPosition {
   start:number | null;
   end:number | null;
