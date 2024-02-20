@@ -40,5 +40,7 @@
 
 .message_card .message_card_content p {
   font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
