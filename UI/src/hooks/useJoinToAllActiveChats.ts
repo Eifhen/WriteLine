@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { IChatModel } from "../models/ChatModel";
-import { joinChat } from "../utils/socketOperations";
 import { CLIENT_CHANNEL, WriteLineSocket } from "../utils/channels.socket";
 
 

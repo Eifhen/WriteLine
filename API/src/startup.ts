@@ -6,7 +6,6 @@ import Configuration from './Configuration/configurations';
 import RouterManager from './Router/router.manager';
 import { RequestErrorHandler } from './Configuration/error.handler.config';
 import { CorsHandler } from "./Configuration/cors.cofig";
-import ApiKeyManager from './Configuration/apikey.handler.config';
 import DatabaseManager from './Configuration/database.config';
 import { ConsoleWarning } from './Utilis/consoleColor';
 
@@ -17,7 +16,6 @@ async function Startup(){
   const app = express();
   const config = Configuration();
   const JsonHandler = express.json({limit:"10mb"});
-  const ApiKeyHandler = ApiKeyManager(config);
   const RouterHandler = RouterManager(config);
   const server = createHTTPServer(app);
   const port = config.port!;
@@ -26,11 +24,16 @@ async function Startup(){
   SocketManager(server);
   
   app.use(CorsHandler);
-  app.use(ApiKeyHandler)
   app.use(JsonHandler);
   app.use("/api", RouterHandler);
   app.use(RequestErrorHandler);
   
+  // ---------------- DEPLOYMENT ------------------
+  
+  config.Deploy(app, express);
+  
+  // ---------------- DEPLOYMENT ------------------
+
   server.listen(port, ()=> {
     ConsoleWarning(`Server Started on PORT ${config.port}`);
   });

@@ -1,9 +1,4 @@
-import { useState } from "react";
 import { IFormInput } from "../components/FormInput/forminput.component";
-
-interface IGroupInput {
-  groupName:string;
-}
 
 interface IUseGroupInputs {
   chatName:string;

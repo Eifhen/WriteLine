@@ -242,7 +242,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
               type="text" 
               ref={searchInputRef}  
               onChange={handleSearch} 
-              placeholder='Busca un chat o inicia uno nuevo.' 
+              placeholder='Busca un chat o escribe @all.' 
             />
             {isSearching && (<span className='close-search ri-close-line' onClick={()=> clearSearch()}></span>)}
           </div>
@@ -250,7 +250,7 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
         <div className="contactbar-body">
           <ContactLoader isLoading={isLoading}>
             {isSearching ? (
-              searchedUsers.length > 0 ? (
+              searchedUsers && searchedUsers.length > 0 ? (
                 searchedUsers.map((item, index)=>(
                   <UserCard 
                     key={index}

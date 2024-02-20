@@ -1,5 +1,5 @@
 import ContactBar, { IContactBar } from './components/contacts/contact.bar.component';
-import { useRef, MutableRefObject, useEffect, useState } from 'react';
+import { useRef, MutableRefObject } from 'react';
 import Panel, { IPanel } from './components/panel/panel.component';
 import './assets/chats.page.desktop.css';
 import './assets/chats.page.movil.css';
@@ -16,7 +16,7 @@ export default function ChatsPage() {
   const chatGroupRef: MutableRefObject<IChatGroupModalExport> = useRef({} as IChatGroupModalExport);
   const editGroupModalRef:MutableRefObject<IChatGroupModalEditExport> = useRef({} as IChatGroupModalEditExport);
   const context = useWriteLineContext();
-  const currentUserGUID = context.userData.guid!;
+  const currentUserGUID = context?.userData?.guid ?? '';
   const { socketServer } = context;
 
   return (

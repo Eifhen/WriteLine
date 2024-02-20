@@ -2,6 +2,7 @@ import { Request, Response, NextFunction} from 'express';
 import { GetHttpErrorMsg } from '../Utilis/codigosHttp';
 import { ifEmpty } from '../Utilis/isEmpty';
 import ConsoleError from '../Utilis/consoleColor';
+import { EnvironmentStates } from './configurations';
 
 export class RequestError extends Error {
   status: number;
@@ -42,8 +43,8 @@ export function RequestErrorHandler(err: Error, req: Request, res: Response, nex
   return res.status(statusCode).json({
     status: statusCode,
     message: err.message,
-    path,
-    error: process.env.NODE_ENV === 'production' ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
+    path,                           // aqui va production no development
+    error: process.env.NODE_ENV === EnvironmentStates.DEVELOPMENT ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
   });
 }
 

@@ -45,8 +45,8 @@ const ConfigModal = forwardRef((props:IConfigModal, ref:ForwardedRef<IConfigModa
   const isConfigPanel = panel === 'config';
   const [configPanelInputs, resetConfigInputs] = useChangePasswordInputs();
   const profileInputs = useProfileInputs({
-    nombre: props.user.nombre,
-    apellido: props.user.apellido,
+    nombre: props?.user?.nombre || '',
+    apellido: props?.user?.apellido || '',
     isReadOnly: inputReadOnly
   });
 

@@ -3,22 +3,31 @@ import { ErrorHandler } from '../Configuration/error.handler.config';
 import { CodigoHTTP } from './codigosHttp';
 import IImageManager from '../Interfaces/image.manager.interface';
 import { IMAGE_BASE64_PATTERN } from '../Patterns/image.pattern';
+import path from 'path';
 
 
 export default class ImageManager implements IImageManager {
-  private _path:string = `${__dirname}/../Store/UserImages`;
+  private _path:string;
 
-  constructor(path?:string){
-    if(path){
-      this._path = path;
-    }
+  constructor(newPath?:string){
+    this._path = newPath || path.join(__dirname, '../Store/UserImages');
   }
 
   /** Guarda la imagen en el servidor y retorna el nombre del archivo*/
-  async SaveImage(imageBase64:string, fileName:string, extension:string, path?:string){
+  async SaveImage(imageBase64:string, fileName:string, extension:string, customPath?:string){
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
-    const imagePath = `${path ?? this._path}/${fileName}.${extension}`; // Ruta donde se guardará la imagen
+
+    const folderPath = customPath || this._path;
+    try {
+      await fs.access(folderPath);
+    }
+    catch (err){
+      // si el folder no existe lo crea
+      await fs.mkdir(folderPath, {recursive: true})
+    }
+
+    const imagePath =  path.join(folderPath, `${fileName}.${extension}`); // Ruta donde se guardará la imagen
     await fs.writeFile(imagePath, buffer); // Guarda la imagen en el servidor
     return fileName; 
   }

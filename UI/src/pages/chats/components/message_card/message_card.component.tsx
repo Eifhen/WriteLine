@@ -40,7 +40,7 @@ const MessageCard = memo(forwardRef((props:IMessageCard, ref) => {
     )
   }
 
-  const messageAlignment = (currentMessage:IMessageModel, currentMessageIndex:number) => {
+  const messageAlignment = (currentMessage:IMessageModel) => {
     return currentMessage.sender.guid === currentUserGUID ? "align-self-end" : ''
   }
 
@@ -75,7 +75,7 @@ const MessageCard = memo(forwardRef((props:IMessageCard, ref) => {
     <ScrollableFeed className="h-100" forceScroll={true}>
       <div className="p-1 d-flex flex-column ">
        {messages && messages.map((data, index)=>(
-          <div className={`message_card ${messageAlignment(data, index)} ${marginTop(data, index)}`} key={index}>
+          <div className={`message_card ${messageAlignment(data)} ${marginTop(data, index)}`} key={index}>
             {(isSameSender(data, index) || isLastMessage(index)) && (
               <MessageCardImage 
                 data={data}

@@ -16,3 +16,19 @@ export interface IUserImageDTO {
   base64:string;
   result?:any;
 }
+
+export const emptyUserDTO = () : IUserDTO => ({
+  _id:'',
+  guid:'',
+  nombre:'',
+  apellido:'',
+  email:'',
+  password:'',
+  date: new Date(),
+  image:{
+    fileName:'',
+    extension:'',
+    base64:'',
+    result:'',
+  }
+})

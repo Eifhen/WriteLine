@@ -69,7 +69,7 @@ export default function SocketManager(httpServer: SockerManager){
 
   io.on(SERVER_CHANNEL.Connection, (socket) =>{
     ConsoleBlue(`Connected to socket.io => ${socket.id}`);
-    AddCurrentConnection(socket.id);
+    AddCurrentConnection(socket.id); // agrega la conección al registro de connecciones
     
     console.log("Connected | current connections =>", GetCurrentConnections());
 

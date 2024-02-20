@@ -31,7 +31,7 @@ export default function SignupPage() {
         const user = SignupService.GetModel(data, userImage);
 
         SignupService.Register(user)
-        .then((res:any )=> {
+        .then(()=> {
           notify("Registro Exitoso", "success", ()=>{
             navigate("/login");
           });

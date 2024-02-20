@@ -27,10 +27,10 @@ export default function useChangePasswordInputs () : [IFormInput[], ()=> void]{
 
   function resetInputs() {
     setAutoFocus(false);
-    setState(prev => ({
+    setState({
       password: '',
       confirm_password: '',
-    }))
+    })
   }
 
   const inputs = [

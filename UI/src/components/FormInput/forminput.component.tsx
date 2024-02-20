@@ -31,7 +31,7 @@ export default function FormInput({...props}:IFormInput) {
   const noErrorMsg = props.noErrorMsg ?? true;
   const readOnly = props.readOnly ?? false;
 
-  function handleFocus(event:any){
+  function handleFocus(){
     if(props.autoFocus){
       setFocus(true);
     }

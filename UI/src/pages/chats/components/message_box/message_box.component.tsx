@@ -1,6 +1,5 @@
 import { ForwardedRef, MutableRefObject, forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { CLIENT_CHANNEL, WriteLineSocket } from '../../../../utils/channels.socket';
-import useIsTyping from '../../../../hooks/useIsTyping';
+import { WriteLineSocket } from '../../../../utils/channels.socket';
 import { emitUserIsTyping, stopTypingInterval } from '../../../../utils/socketOperations';
 
 
