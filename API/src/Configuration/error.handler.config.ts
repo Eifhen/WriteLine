@@ -44,7 +44,7 @@ export function RequestErrorHandler(err: Error, req: Request, res: Response, nex
     status: statusCode,
     message: err.message,
     path,                           // aqui va production no development
-    error: process.env.NODE_ENV === EnvironmentStates.DEVELOPMENT ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
+    error: process.env.NODE_ENV === EnvironmentStates.PRODUCTION ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
   });
 }
 
