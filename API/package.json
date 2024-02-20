@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon --exec ts-node src/startup.ts",
     "init": "node dist/startup.js",
-    "build": "tsc"
+    "build": "tsc",
+    "build-production":  "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix ../UI && npm run build --prefix ../UI"
   },
   "author": "Gabriel Jimenez",
   "license": "ISC",
