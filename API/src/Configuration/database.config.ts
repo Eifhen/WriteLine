@@ -14,7 +14,7 @@ export default function DatabaseManager (config:IConfiguracion) {
 
 async function connectToDataBase(connectionString:string, retryInterval:number = 5000) {
 
-  let retryTimer: NodeJS.Timeout | null = null
+  let retryTimer:any = null;
   const retryConnection = async () => {
     try {
       await mongoose.connect(connectionString);

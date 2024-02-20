@@ -30,7 +30,7 @@ const MessageBox = memo(forwardRef((props:IMessageBox, ref:ForwardedRef<IMessage
   const [cursorPosition, setCursorPosition] = useState<ICursorPosition>({} as ICursorPosition);
   const inputRef:MutableRefObject<HTMLTextAreaElement|null> = useRef(null);
   const timerLength = 3000;
-  let typingTimer: NodeJS.Timeout | null = null;
+  let typingTimer: any = null;
  
   const handleChange = (event:any) =>{
     setMessage(event.target.value);

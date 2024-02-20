@@ -73,12 +73,12 @@ export const createRoom = (socket:WriteLineSocket, data:IUserDTO) => {
   @param {WriteLineSocket} socket - Socket a enviar
   @param {selectedChatId} selectedChatId - room/chat a la cual se enviará el socket
   @param {String} currentUserID - guid del usuario que está escribiendo
-  @param {NodeJS.Timeout | null} typingTimer - variable que contrendrá el setTimeOut para fines de realizar el clearTimeout
+  @param {any} typingTimer - variable que contrendrá el setTimeOut para fines de realizar el clearTimeout
   @param {number} timerLength - variable que contiene el tiempo de retrazo para la emisión del socket
   @description
   Emite un socket después de un determinado tiempo inidicando que el usuario dejó de escribirE 
 */
-export const stopTypingInterval = (socket:WriteLineSocket, selectedChatId:string, currentUserGUID:string,typingTimer:NodeJS.Timeout | null, timerLength:number) => {
+export const stopTypingInterval = (socket:WriteLineSocket, selectedChatId:string, currentUserGUID:string,typingTimer:any, timerLength:number) => {
   if(typingTimer != null){
     clearTimeout(typingTimer);
   }
