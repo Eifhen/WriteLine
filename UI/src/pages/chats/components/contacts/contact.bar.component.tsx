@@ -20,6 +20,7 @@ import { useOnMessageReceived } from '../../../../hooks/useOnMessageReceived';
 import objectIsNotEmpty from '../../../../utils/object_helpers';
 import useOnChatIsUpdated from '../../../../hooks/useOnChatIsUpdated';
 import useJoinToAllActiveChats from '../../../../hooks/useJoinToAllActiveChats';
+import getUserImage from '../../../../utils/getUserImage';
 
 
 interface IContactBarProps {
@@ -139,7 +140,29 @@ const ContactBar = forwardRef((props:IContactBarProps,  ref) => {
       const isActive = objectIsNotEmpty(activeItem);
       const chatsAreEqual = activeItem._id === receivedMessage.chat._id;
       const updateMessages = isActive && chatsAreEqual;
-      props.panelRef?.current.updateReferences(receivedMessage, updateMessages);
+      const isInChatList = activeChats.some(m => m._id === receivedMessage.chat._id);
+      if(isInChatList){
+        props.panelRef?.current.updateReferences(receivedMessage, updateMessages);
+      }
+      else {
+       // si el mensaje fue enviado a un chat que no está en la lista
+       // de chats activos entonces debe agregarlo
+        if(!receivedMessage.chat.isGroupChat){
+          const destinatario = receivedMessage.chat.users.find(m => m.guid !== props.currentUserGUID)!;
+          getUserImage(destinatario.guid!, (image)=>{
+            if(objectIsNotEmpty(destinatario.image)){
+              destinatario!.image!.base64 = image.data;
+            }
+            receivedMessage.chat.latestMessage = {} as IMessageModel; 
+            receivedMessage.chat.latestMessage.content = receivedMessage.content;
+            receivedMessage.chat.latestMessage.sender = receivedMessage.sender;
+            receivedMessage.chat.latestMessage.chat = receivedMessage.chat;
+            receivedMessage.chat.latestMessage.date = receivedMessage.date;
+            receivedMessage.chat.hasNewMessages = true;
+            setActiveChats(prev => ([...prev, receivedMessage.chat]))
+          });
+        }
+      }
     }
   }, [props.socketServer, activeItem]);
 

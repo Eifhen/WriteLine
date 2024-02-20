@@ -6,7 +6,7 @@ import useLoginInputs from "../../hooks/useLoginInputs";
 import Button from '../../components/Button/Button.component';
 import './login.page.desktop.css';
 import './login.page.movil.css';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SigninService from "../../services/SigninService/SigninService";
 import notify from "../../utils/notify";
 import HTTP from "../../services/HttpService/HTTPService";
@@ -60,16 +60,22 @@ export default function LoginPage() {
           </div>
           <div className="login-card-body">
             <h1 className="fw-bold">Iniciar Sesión</h1>
-              <div className="mt-2">
-                {formInputs.map((input, index) => (
-                  <FormInput key={index} fieldClass="mt-1" showError={showError} {...input} />
-                ))}
-                <Button
-                  isLoading={disable} 
-                  title="Iniciar Sesión" 
-                  className="w-100 mt-2 bg-blue400 text-white fw-bold"
-                />
+            <div className="mt-2">
+              {formInputs.map((input, index) => (
+                <FormInput key={index} fieldClass="mt-1" showError={showError} {...input} />
+              ))}
+              <Button
+                isLoading={disable} 
+                title="Iniciar Sesión" 
+                className="w-100 mt-2 fs-1 bg-blue400 text-white fw-bold"
+              />
+              <div className="mt-1-5 w-100 text-center">
+                <p className="fw-bold text-gray-loyal fs-14px">
+                  ¿No tienes una cuenta?
+                  <Link className="text-blue400 ml-0-5" to="/signup">Registrarse.</Link>
+                </p>
               </div>
+            </div>
           </div>
         </form>
       </div>
