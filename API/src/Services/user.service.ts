@@ -12,6 +12,7 @@ import IImageManager from "../Interfaces/image.manager.interface";
 import TransactionManager from "../Utilis/transaction.manager";
 import { SearchCommands } from "../Utilis/enums";
 import { IMAGE_BASE64_PATTERN } from "../Patterns/image.pattern";
+import activityLog from "../Utilis/activitylog";
 
 export class UserService implements IUserService {
 
@@ -23,6 +24,7 @@ export class UserService implements IUserService {
 
   async GetAllUsers(req:WriteLineRequest) : Promise<IResponseHandler<IUserDTO[]>> {
     // busca todos los usuarios excepto el actualmente logeado
+    activityLog("service", "UserService", "GetAllUsers");
     const current = req.currentUser!;
     const find:IUserModel[] | null = await UserModel.find({ _id: { $ne: current._id }}).lean().exec();
 
@@ -35,6 +37,7 @@ export class UserService implements IUserService {
   
   async GetUsersByQuery(req:WriteLineRequest) : Promise<IResponseHandler<IUserDTO[]>>{
     try {
+      activityLog("service", "UserService", "GetUsersByQuery");
       const current = req.currentUser!;
       const { search } = req.query;
       if(search === SearchCommands.All){
@@ -63,6 +66,7 @@ export class UserService implements IUserService {
   }
 
   async GetUser(guid:string) : Promise<IResponseHandler<IUserDTO>>{
+    activityLog("service", "UserService", "GetUser");
     const find:IUserModel | null = await UserModel.findOne({ guid });
     if(find) { 
       const user:IUserDTO = ToUserDTO(find);
@@ -76,6 +80,7 @@ export class UserService implements IUserService {
   }
 
   async GetUsersById(ids:string[]) : Promise<IUserModel[]>{
+    activityLog("service", "UserService", "GetUsersById");
     try {
       let users:IUserModel[] = [];
       
@@ -93,6 +98,7 @@ export class UserService implements IUserService {
   }
 
   async AddUser(user:IUserModel) : Promise<IResponseHandler<IUserModel>>{
+    activityLog("service", "UserService", "AddUser");
     if(isNotEmpty(user) && validateUserModel(user)){
       const newUser = new UserModel({
         ...user,
@@ -107,6 +113,7 @@ export class UserService implements IUserService {
   }
 
   async UpdateUser(guid:string, user:IUserDTO) : Promise<IResponseHandler<IUserDTO>>{
+    activityLog("service", "UserService", "UpdateUser");
     const {isValid, errors} = validateUserDTO(user); 
     if(isValid){   
       const find = await UserModel.findOne({ guid }).exec();
@@ -162,6 +169,7 @@ export class UserService implements IUserService {
   }
 
   async DeleteUser(guid: string): Promise<IResponseHandler<IUserModel>> {
+    activityLog("service", "UserService", "DeleteUser");
     const deletedUser:IUserModel | null = await UserModel.findOneAndDelete({ guid }).lean().exec();
     if(deletedUser){
       return ResponseHandler<IUserModel>(deletedUser as IUserModel, MensajeHTTP.Deleted);
@@ -170,6 +178,7 @@ export class UserService implements IUserService {
   }
 
   async GetUserImage(guid:string): Promise<IResponseHandler<string>> {
+    activityLog("service", "UserService", "GetUserImage");
     try {
       const find:IUserModel | null = await UserModel.findOne({ guid }).lean().exec();
       if(find) { 
@@ -194,6 +203,7 @@ export class UserService implements IUserService {
   }
 
   async UpdatePassword(req:WriteLineRequest) : Promise<IResponseHandler<string>>{
+    activityLog("service", "UserService", "UpdatePassword");
     try {
       const currentUser = req.currentUser;
       const newPassword = req.body.password;
