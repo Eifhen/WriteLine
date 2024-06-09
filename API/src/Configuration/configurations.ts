@@ -24,7 +24,9 @@ export interface IConfiguracion {
 
 export default function Configuration() : IConfiguracion {
   dotenv.config(); 
-  process.env.NODE_ENV = EnvironmentStates.PRODUCTION; // development || production
+  process.env.NODE_ENV = process.argv[2] as Environment; // development || production
+
+  console.log("Process =>", process.env.NODE_ENV);
 
   const envPath = path.resolve(__dirname, '../..');
   if (process.env.NODE_ENV === EnvironmentStates.PRODUCTION) {
@@ -38,10 +40,6 @@ export default function Configuration() : IConfiguracion {
     const uiPath = path.join(__dirname1, '../UI/dist');
     const uiProyectPath = path.resolve(__dirname1, "..", "UI", "dist", "index.html");
     
-    // console.log("paths dirname 1 =>", __dirname1);
-    // console.log("paths uiPath  =>", uiPath);
-    // console.log("paths uiProyectPath  =>", uiProyectPath);
-
     if(process.env.NODE_ENV === EnvironmentStates.PRODUCTION){
       app.use(express.static(uiPath));
       app.get("*", (req:Request, res:Response)=> {
