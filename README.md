@@ -10,6 +10,7 @@ App de chat, hecha mediante las siguientes tecnologías
 5) Express JS
 6) Socket.io
 7) Chakra UI
+8) Clodinary (para el manejo de imagenes)
 
 
 ## Home Page
