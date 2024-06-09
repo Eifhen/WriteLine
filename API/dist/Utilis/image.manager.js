@@ -17,13 +17,11 @@ const error_handler_config_1 = require("../Configuration/error.handler.config");
 const codigosHttp_1 = require("./codigosHttp");
 const image_pattern_1 = require("../Patterns/image.pattern");
 const path_1 = __importDefault(require("path"));
+const cloudinary_manager_1 = __importDefault(require("../Configuration/cloudinary.manager"));
 class ImageManager {
     constructor(newPath) {
-        this._path = newPath || path_1.default.join(__dirname, '../Store/UserImages');
-    }
-    /** Guarda la imagen en el servidor y retorna el nombre del archivo*/
-    SaveImage(imageBase64, fileName, extension, customPath) {
-        return __awaiter(this, void 0, void 0, function* () {
+        /** Guarda la imagen en el servidor y retorna el nombre del archivo*/
+        this.SaveImage = (imageBase64, fileName, extension, customPath) => __awaiter(this, void 0, void 0, function* () {
             const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
             const buffer = Buffer.from(base64Data, 'base64');
             const folderPath = customPath || this._path;
@@ -38,10 +36,8 @@ class ImageManager {
             yield promises_1.default.writeFile(imagePath, buffer); // Guarda la imagen en el servidor
             return fileName;
         });
-    }
-    /** Elimina la imagen del servidor */
-    RemoveImage(imageName, extension, imagePath) {
-        return __awaiter(this, void 0, void 0, function* () {
+        /** Elimina la imagen del servidor */
+        this.RemoveImage = (imageName, extension, imagePath) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const fullFileName = `${imageName}.${extension}`;
                 const image = `${imagePath !== null && imagePath !== void 0 ? imagePath : this._path}/${fullFileName}`;
@@ -54,10 +50,8 @@ class ImageManager {
                 throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.InternalServerError, `Error al intentar eliminar el archivo: ${err.message}`, __filename);
             }
         });
-    }
-    /** Obtiene la imagen deseada en base64 */
-    GetImage(fileName, extension, path) {
-        return __awaiter(this, void 0, void 0, function* () {
+        /** Obtiene la imagen deseada en base64 */
+        this.GetImage = (fileName, extension, path) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const imagePath = `${path !== null && path !== void 0 ? path : this._path}/${fileName}.${extension}`;
                 const data = yield promises_1.default.readFile(imagePath);
@@ -69,13 +63,40 @@ class ImageManager {
                 throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.InternalServerError, `Error al intentar obtener el archivo: ${err.message}`, __filename);
             }
         });
-    }
-    GetImageFormat(base64, extension) {
-        const imageBase64 = base64.replace(image_pattern_1.IMAGE_BASE64_PATTERN, '');
-        return `data:image/${extension};base64,${imageBase64}`;
-    }
-    setUserImageName(guid) {
-        return `user_${guid}`;
+        this.GetImageFormat = (base64, extension) => {
+            const imageBase64 = base64.replace(image_pattern_1.IMAGE_BASE64_PATTERN, '');
+            return `data:image/${extension};base64,${imageBase64}`;
+        };
+        this.setUserImageName = (guid) => {
+            return `user_${guid}`;
+        };
+        this.SaveImageInCloud = (fileName, extension, imageBase64) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                return yield cloudinary_manager_1.default.UploadImage(fileName, extension, imageBase64);
+            }
+            catch (err) {
+                throw (0, error_handler_config_1.ErrorHandler)((_a = err.status) !== null && _a !== void 0 ? _a : codigosHttp_1.CodigoHTTP.InternalServerError, err.message, (_b = err.path) !== null && _b !== void 0 ? _b : __filename);
+            }
+        });
+        this.GetImageCloudURL = (fileName, extension) => __awaiter(this, void 0, void 0, function* () {
+            var _c, _d;
+            try {
+                return yield cloudinary_manager_1.default.GetImage(fileName, extension);
+            }
+            catch (err) {
+                throw (0, error_handler_config_1.ErrorHandler)((_c = err.status) !== null && _c !== void 0 ? _c : codigosHttp_1.CodigoHTTP.InternalServerError, `Error al intentar guardar el archivo: ${err.message}`, (_d = err.path) !== null && _d !== void 0 ? _d : __filename);
+            }
+        });
+        this.DeleteImageFromCloud = (fileName, extension) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield cloudinary_manager_1.default.DeleteImage(fileName, extension);
+            }
+            catch (err) {
+                throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.InternalServerError, `Error al intentar eliminar el archivo: ${err.message}`, __filename);
+            }
+        });
+        this._path = newPath || path_1.default.join(__dirname, '../Store/UserImages');
     }
 }
 exports.default = ImageManager;

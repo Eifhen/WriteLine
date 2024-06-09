@@ -23,6 +23,8 @@ const user_dto_1 = require("../DTO/user.dto");
 const image_manager_1 = __importDefault(require("../Utilis/image.manager"));
 const transaction_manager_1 = __importDefault(require("../Utilis/transaction.manager"));
 const enums_1 = require("../Utilis/enums");
+const image_pattern_1 = require("../Patterns/image.pattern");
+const activitylog_1 = __importDefault(require("../Utilis/activitylog"));
 class UserService {
     constructor() {
         this.imageManager = new image_manager_1.default();
@@ -30,6 +32,7 @@ class UserService {
     GetAllUsers(req) {
         return __awaiter(this, void 0, void 0, function* () {
             // busca todos los usuarios excepto el actualmente logeado
+            (0, activitylog_1.default)("service", "UserService", "GetAllUsers");
             const current = req.currentUser;
             const find = yield user_model_1.UserModel.find({ _id: { $ne: current._id } }).lean().exec();
             if (find) {
@@ -42,6 +45,7 @@ class UserService {
     GetUsersByQuery(req) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                (0, activitylog_1.default)("service", "UserService", "GetUsersByQuery");
                 const current = req.currentUser;
                 const { search } = req.query;
                 if (search === enums_1.SearchCommands.All) {
@@ -69,14 +73,15 @@ class UserService {
         });
     }
     GetUser(guid) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "GetUser");
             const find = yield user_model_1.UserModel.findOne({ guid });
             if (find) {
                 const user = (0, user_dto_1.ToUserDTO)(find);
-                if ((_a = user.image) === null || _a === void 0 ? void 0 : _a.fileName) {
+                if (((_a = user.image) === null || _a === void 0 ? void 0 : _a.fileName) && !((_b = user.image) === null || _b === void 0 ? void 0 : _b.url)) {
                     const { fileName, extension } = user.image;
-                    user.image.base64 = yield this.imageManager.GetImage(fileName, extension);
+                    user.image.url = yield this.imageManager.GetImageCloudURL(fileName, extension);
                 }
                 return (0, response_handler_config_1.ResponseHandler)(user, codigosHttp_1.MensajeHTTP.OK);
             }
@@ -85,6 +90,7 @@ class UserService {
     }
     GetUsersById(ids) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "GetUsersById");
             try {
                 let users = [];
                 for (var id of ids) {
@@ -102,6 +108,7 @@ class UserService {
     }
     AddUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "AddUser");
             if ((0, isEmpty_1.isNotEmpty)(user) && (0, user_model_1.validateUserModel)(user)) {
                 const newUser = new user_model_1.UserModel(Object.assign(Object.assign({}, user), { guid: (0, nanoid_1.nanoid)(10) }));
                 const savedUser = yield newUser.save();
@@ -111,7 +118,9 @@ class UserService {
         });
     }
     UpdateUser(guid, user) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "UpdateUser");
             const { isValid, errors } = (0, user_dto_1.validateUserDTO)(user);
             if (isValid) {
                 const find = yield user_model_1.UserModel.findOne({ guid }).exec();
@@ -128,19 +137,22 @@ class UserService {
                             user.image.fileName = this.imageManager.setUserImageName(find.guid);
                             if (find.image && (0, isEmpty_1.isNotEmpty)(find.image.fileName) && (0, isEmpty_1.isNotEmpty)(find.image.extension)) {
                                 // si ya existe una imagen la removemos
-                                yield this.imageManager.RemoveImage(find.image.fileName, find.image.extension);
+                                yield this.imageManager.DeleteImageFromCloud(find.image.fileName, find.image.extension);
                             }
+                            const base64Data = user.image.base64.replace(image_pattern_1.IMAGE_BASE64_PATTERN, '');
+                            const result = yield this.imageManager.SaveImageInCloud(user.image.fileName, user.image.extension, base64Data);
                             find.image = {
                                 base64: '', // el base64 no lo guardo en la bd;
                                 fileName: user.image.fileName,
-                                extension: user.image.extension
+                                extension: user.image.extension,
+                                url: result.url
                             };
-                            yield this.imageManager.SaveImage(user.image.base64, user.image.fileName, user.image.extension);
                         }
                         const updatedUser = yield find.save({ session });
                         const userDTO = (0, user_dto_1.ToUserDTO)(updatedUser);
                         if (user.image && user.image.base64 && user.image.extension && userDTO.image) {
-                            userDTO.image.base64 = this.imageManager.GetImageFormat(user.image.base64, user.image.extension);
+                            //userDTO.image.base64 = this.imageManager.GetImageFormat(user.image.base64, user.image.extension);
+                            userDTO.image.url = (_a = updatedUser.image) === null || _a === void 0 ? void 0 : _a.url;
                         }
                         yield commitTransaction();
                         return (0, response_handler_config_1.ResponseHandler)(userDTO, codigosHttp_1.MensajeHTTP.OK);
@@ -157,6 +169,7 @@ class UserService {
     }
     DeleteUser(guid) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "DeleteUser");
             const deletedUser = yield user_model_1.UserModel.findOneAndDelete({ guid }).lean().exec();
             if (deletedUser) {
                 return (0, response_handler_config_1.ResponseHandler)(deletedUser, codigosHttp_1.MensajeHTTP.Deleted);
@@ -165,16 +178,21 @@ class UserService {
         });
     }
     GetUserImage(guid) {
-        var _a;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "GetUserImage");
             try {
                 const find = yield user_model_1.UserModel.findOne({ guid }).lean().exec();
                 if (find) {
                     const user = (0, user_dto_1.ToUserDTO)(find);
                     if ((_a = user.image) === null || _a === void 0 ? void 0 : _a.fileName) {
                         const { fileName, extension } = user.image;
-                        const base64 = yield this.imageManager.GetImage(fileName, extension);
-                        return (0, response_handler_config_1.ResponseHandler)(base64, codigosHttp_1.MensajeHTTP.OK);
+                        if ((_b = user.image) === null || _b === void 0 ? void 0 : _b.url) {
+                            return (0, response_handler_config_1.ResponseHandler)((_c = user.image) === null || _c === void 0 ? void 0 : _c.url, codigosHttp_1.MensajeHTTP.OK);
+                        }
+                        //const base64 = await this.imageManager.GetImage(fileName, extension);
+                        const url = yield this.imageManager.GetImageCloudURL(fileName, extension);
+                        return (0, response_handler_config_1.ResponseHandler)(url, codigosHttp_1.MensajeHTTP.OK);
                     }
                     throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.NotFound, 'Sin imagen', __filename);
                 }
@@ -187,6 +205,7 @@ class UserService {
     }
     UpdatePassword(req) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, activitylog_1.default)("service", "UserService", "UpdatePassword");
             try {
                 const currentUser = req.currentUser;
                 const newPassword = req.body.password;

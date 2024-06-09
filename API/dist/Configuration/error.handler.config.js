@@ -42,7 +42,7 @@ function RequestErrorHandler(err, req, res, next) {
         status: statusCode,
         message: err.message,
         path, // aqui va production no development
-        error: process.env.NODE_ENV === configurations_1.EnvironmentStates.DEVELOPMENT ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
+        error: process.env.NODE_ENV === configurations_1.EnvironmentStates.PRODUCTION ? 'Error en el servidor' : err.stack // En producción, no mostrar detalles del error al cliente
     });
 }
 exports.RequestErrorHandler = RequestErrorHandler;

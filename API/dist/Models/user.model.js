@@ -131,7 +131,7 @@ const User_BD_Schema = new mongoose_1.Schema({
 // guarde en texto plano
 User_BD_Schema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!this.isModified) {
+        if (!this.isModified("password")) {
             next();
         }
         this.password = yield (0, encrypt_1.EncryptPassword)(this.password);

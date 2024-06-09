@@ -23,7 +23,7 @@ const image_pattern_1 = require("../Patterns/image.pattern");
 const isEmpty_1 = require("../Utilis/isEmpty");
 class SignUpService {
     Register(data) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             const guid = (0, nanoid_1.nanoid)(10);
             const imageManager = new image_manager_1.default();
@@ -36,7 +36,10 @@ class SignUpService {
                     if ((_a = data.image) === null || _a === void 0 ? void 0 : _a.base64) {
                         const extension = data.image.extension;
                         const base64Data = data.image.base64.replace(image_pattern_1.IMAGE_BASE64_PATTERN, '');
-                        data.image.fileName = yield imageManager.SaveImage(base64Data, imageFileName, extension);
+                        // data.image.fileName = await imageManager.SaveImage(base64Data, imageFileName, extension);
+                        const result = yield imageManager.SaveImageInCloud(imageFileName, extension, base64Data);
+                        data.image.fileName = imageFileName;
+                        data.image.url = result.url;
                         data.image.base64 = '';
                     }
                     const newUser = new user_model_1.UserModel(Object.assign(Object.assign({}, data), { guid }));
@@ -54,9 +57,10 @@ class SignUpService {
                     (0, isEmpty_1.isNotEmpty)((_b = data.image) === null || _b === void 0 ? void 0 : _b.base64) &&
                     (0, isEmpty_1.isNotEmpty)(data.image.fileName) &&
                     (0, isEmpty_1.isNotEmpty)(data.image.extension)) {
-                    yield imageManager.RemoveImage(imageFileName, data.image.extension);
+                    //await imageManager.RemoveImage(imageFileName, data.image.extension);
+                    yield imageManager.DeleteImageFromCloud(imageFileName, data.image.extension);
                 }
-                throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.BadRequest, err.message, __filename);
+                throw (0, error_handler_config_1.ErrorHandler)(codigosHttp_1.CodigoHTTP.BadRequest, err.message, (_c = err.path) !== null && _c !== void 0 ? _c : __filename);
             }
         });
     }

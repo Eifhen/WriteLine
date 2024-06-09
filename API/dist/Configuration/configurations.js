@@ -10,7 +10,7 @@ var EnvironmentStates;
 })(EnvironmentStates || (exports.EnvironmentStates = EnvironmentStates = {}));
 function Configuration() {
     dotenv.config();
-    process.env.NODE_ENV = EnvironmentStates.PRODUCTION; // development || production
+    process.env.NODE_ENV = process.argv[2]; // development || production
     const envPath = path.resolve(__dirname, '../..');
     if (process.env.NODE_ENV === EnvironmentStates.PRODUCTION) {
         dotenv.config({ path: path.resolve(envPath, '.env.production') });
@@ -22,9 +22,6 @@ function Configuration() {
         const __dirname1 = path.resolve();
         const uiPath = path.join(__dirname1, '../UI/dist');
         const uiProyectPath = path.resolve(__dirname1, "..", "UI", "dist", "index.html");
-        // console.log("paths dirname 1 =>", __dirname1);
-        // console.log("paths uiPath  =>", uiPath);
-        // console.log("paths uiProyectPath  =>", uiProyectPath);
         if (process.env.NODE_ENV === EnvironmentStates.PRODUCTION) {
             app.use(express.static(uiPath));
             app.get("*", (req, res) => {

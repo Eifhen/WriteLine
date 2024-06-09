@@ -15,10 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const user_service_1 = __importDefault(require("../Services/user.service"));
 const codigosHttp_1 = require("../Utilis/codigosHttp");
+const activitylog_1 = __importDefault(require("../Utilis/activitylog"));
 const UserController = (0, express_1.Router)();
 // GetUsersByQuery api/users?search=
 UserController.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "GetUsersByQuery");
         const data = yield user_service_1.default.GetUsersByQuery(req);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
@@ -29,6 +31,7 @@ UserController.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 // GetAllUsers
 UserController.get("/all", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "GetALL");
         const data = yield user_service_1.default.GetAllUsers(req);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
@@ -39,6 +42,7 @@ UserController.get("/all", (req, res, next) => __awaiter(void 0, void 0, void 0,
 // GetUser
 UserController.get("/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "GetUser");
         const data = yield user_service_1.default.GetUser(req.params.id);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
@@ -49,6 +53,7 @@ UserController.get("/:id", (req, res, next) => __awaiter(void 0, void 0, void 0,
 // AddUser
 UserController.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "AddUser");
         const newUser = req.body;
         const data = yield user_service_1.default.AddUser(newUser);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
@@ -60,6 +65,7 @@ UserController.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, f
 // UpdatePassword
 UserController.put("/change-password", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "UpdatePassword");
         const data = yield user_service_1.default.UpdatePassword(req);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
@@ -70,6 +76,7 @@ UserController.put("/change-password", (req, res, next) => __awaiter(void 0, voi
 // UpdateUser
 UserController.put("/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "UpdateUser");
         const user = req.body;
         const data = yield user_service_1.default.UpdateUser(req.params.id, user);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
@@ -81,6 +88,7 @@ UserController.put("/:id", (req, res, next) => __awaiter(void 0, void 0, void 0,
 //DeleteUser
 UserController.delete("/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "DeleteUser");
         const data = yield user_service_1.default.DeleteUser(req.params.id);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
@@ -91,6 +99,7 @@ UserController.delete("/:id", (req, res, next) => __awaiter(void 0, void 0, void
 // GetUserImage
 UserController.get("/image/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, activitylog_1.default)("controller", "UserController", "GetUserImage");
         const data = yield user_service_1.default.GetUserImage(req.params.id);
         return res.status(codigosHttp_1.CodigoHTTP.OK).json(data);
     }
