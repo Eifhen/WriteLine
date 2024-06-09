@@ -172,7 +172,7 @@ const Panel = forwardRef((props:IPanelProps, ref) => {
       <div className='panel'>
         <div className="panel-header">
           <div className='info-container' onClick={()=> props.editGroupModalRef.current.ModalInit(activeItem)}>
-            <img src={image} alt="" />
+            <img className='image-style' src={image} alt="" />
             <div className="info-body">
               <h1 title={chatName()}>{chatName()}</h1>
               <p title={subTitle()} className={`text-trucante w-800px text-blue800 ${typingIndicator.isTyping && 'is-typing'}`}>

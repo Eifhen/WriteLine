@@ -24,6 +24,7 @@ const UserImage = forwardRef((props:IUserImageProps, ref: React.Ref<IUserImage>)
     base64: props.image?.base64 ?? user_avatar,
     fileName: props.image?.fileName ?? '',
     extension: props.image?.extension ?? '',
+    url: props.image?.url ?? '',
   });
 
   const handleFileChange = (event:any) => {
@@ -41,6 +42,7 @@ const UserImage = forwardRef((props:IUserImageProps, ref: React.Ref<IUserImage>)
         base64: props.image?.base64 ?? user_avatar,
         fileName:'',
         extension:'',
+        url: props.image?.url 
       });
     }
   };
@@ -66,7 +68,8 @@ const UserImage = forwardRef((props:IUserImageProps, ref: React.Ref<IUserImage>)
        style={{
         width: props.size, 
         height:props.size,
-        backgroundImage:`url("${image.base64}")`
+        backgroundColor: "whitesmoke",
+        backgroundImage:`url("${image.url ?? image.base64}")`
       }}
     >
       {isEditing && (

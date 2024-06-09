@@ -11,6 +11,7 @@ import ImageManager from '../Utilis/image.manager';
 import IImageManager from "../Interfaces/image.manager.interface";
 import TransactionManager from "../Utilis/transaction.manager";
 import { SearchCommands } from "../Utilis/enums";
+import { IMAGE_BASE64_PATTERN } from "../Patterns/image.pattern";
 
 export class UserService implements IUserService {
 
@@ -65,9 +66,9 @@ export class UserService implements IUserService {
     const find:IUserModel | null = await UserModel.findOne({ guid });
     if(find) { 
       const user:IUserDTO = ToUserDTO(find);
-      if(user.image?.fileName){
+      if(user.image?.fileName && !user.image?.url){
         const {fileName, extension} = user.image;
-        user.image.base64 = await this.imageManager.GetImage(fileName, extension);
+        user.image.url = await this.imageManager.GetImageCloudURL(fileName, extension);
       }
       return ResponseHandler<IUserDTO>(user, MensajeHTTP.OK);
     }
@@ -122,26 +123,28 @@ export class UserService implements IUserService {
 
           if(user.image && user.image.base64){
             user.image.fileName = this.imageManager.setUserImageName(find.guid);
-            
+
             if(find.image && isNotEmpty(find.image.fileName) && isNotEmpty(find.image.extension) ){
               // si ya existe una imagen la removemos
-              await this.imageManager.RemoveImage(find.image.fileName, find.image.extension);
+              await this.imageManager.DeleteImageFromCloud(find.image.fileName, find.image.extension);
             }
-
+            const base64Data = user.image.base64.replace(IMAGE_BASE64_PATTERN, '');
+            const result = await this.imageManager.SaveImageInCloud(user.image.fileName, user.image.extension, base64Data);
+            
             find.image = {
               base64: '', // el base64 no lo guardo en la bd;
               fileName: user.image.fileName,
-              extension: user.image.extension
+              extension: user.image.extension,
+              url: result.url
             } as IUserImage;
-            
-            await this.imageManager.SaveImage(user.image.base64, user.image.fileName, user.image.extension);
           }
           
           const updatedUser:IUserModel = await find.save({session});
           const userDTO:IUserDTO = ToUserDTO(updatedUser);
 
           if(user.image && user.image.base64 && user.image.extension && userDTO.image){
-            userDTO.image.base64 = this.imageManager.GetImageFormat(user.image.base64, user.image.extension);
+            //userDTO.image.base64 = this.imageManager.GetImageFormat(user.image.base64, user.image.extension);
+            userDTO.image.url = updatedUser.image?.url;
           }
 
           await commitTransaction();
@@ -173,8 +176,12 @@ export class UserService implements IUserService {
         const user:IUserDTO = ToUserDTO(find);
         if(user.image?.fileName){
           const {fileName, extension} = user.image;
-          const base64 = await this.imageManager.GetImage(fileName, extension);
-          return ResponseHandler<string>(base64, MensajeHTTP.OK);
+          if(user.image?.url){
+            return ResponseHandler<string>(user.image?.url, MensajeHTTP.OK);
+          }
+          //const base64 = await this.imageManager.GetImage(fileName, extension);
+          const url = await this.imageManager.GetImageCloudURL(fileName, extension);
+          return ResponseHandler<string>(url, MensajeHTTP.OK);
         }
         throw ErrorHandler(CodigoHTTP.NotFound, 'Sin imagen', __filename);
       }

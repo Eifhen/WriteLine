@@ -26,8 +26,6 @@ export default function Configuration() : IConfiguracion {
   dotenv.config(); 
   process.env.NODE_ENV = process.argv[2] as Environment; // development || production
 
-  console.log("Process =>", process.env.NODE_ENV);
-
   const envPath = path.resolve(__dirname, '../..');
   if (process.env.NODE_ENV === EnvironmentStates.PRODUCTION) {
     dotenv.config({ path: path.resolve(envPath, '.env.production') });

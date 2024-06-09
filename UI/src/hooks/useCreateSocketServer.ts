@@ -42,7 +42,7 @@ export function useCreateSocketServer(callback:(socket:any)=>void){
     // cleanup
     return () => {
       newSocket.off(CLIENT_CHANNEL.Connection, connectHandler);
-      newSocket.off(CLIENT_CHANNEL.ConnectionError, errorHandler);
+      newSocket.off(CLIENT_CHANNEL.ConnectionError, connectionErrorHandler);
       newSocket.off(CLIENT_CHANNEL.Error, errorHandler);
 
       if (newSocket) {

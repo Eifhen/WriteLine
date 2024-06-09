@@ -744,6 +744,12 @@ a:hover { opacity: 0.5; }
 .w-90vw { width: 90vw; }
 .w-100vw { width: 100vw; }
 
+
+.image-style {
+  object-fit: cover;
+  object-position: center;
+}
+
 .list-unstyled {
   list-style: none !important;
 }

@@ -25,7 +25,10 @@ class SignUpService implements ISignUpService {
         if (data.image?.base64) {
           const extension = data.image.extension;
           const base64Data = data.image.base64.replace(IMAGE_BASE64_PATTERN, '');
-          data.image.fileName = await imageManager.SaveImage(base64Data, imageFileName, extension);
+          // data.image.fileName = await imageManager.SaveImage(base64Data, imageFileName, extension);
+          const result = await imageManager.SaveImageInCloud(imageFileName, extension, base64Data);
+          data.image.fileName = imageFileName;
+          data.image.url = result.url;
           data.image.base64 = '';
         }
         
@@ -53,9 +56,14 @@ class SignUpService implements ISignUpService {
         isNotEmpty(data.image.fileName) && 
         isNotEmpty(data.image.extension)
       ) {
-        await imageManager.RemoveImage(imageFileName, data.image.extension);
+        //await imageManager.RemoveImage(imageFileName, data.image.extension);
+        await imageManager.DeleteImageFromCloud(imageFileName, data.image.extension);
       }
-      throw ErrorHandler(CodigoHTTP.BadRequest, err.message, __filename);
+      throw ErrorHandler(
+        CodigoHTTP.BadRequest, 
+        err.message, 
+        err.path ?? __filename
+      );
     }
   }
 }

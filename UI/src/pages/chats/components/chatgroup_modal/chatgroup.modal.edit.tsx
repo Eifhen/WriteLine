@@ -376,7 +376,7 @@ const ChatGroupModalEdit = forwardRef((props:IChatGroupModalEditProps, ref) => {
               <>
                 <div className={`align-y-center  gap-1 pl-2 pb-1 pr-0 ${isGroupChat ? 'pt-1' : 'pt-1'}`}>
                   <img 
-                    className="rounded-circle bg-pure align-center w-100px h-100px" 
+                    className="image-style rounded-circle bg-pure align-center w-100px h-100px" 
                     src={image} alt="" 
                   />
 

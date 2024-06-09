@@ -14,6 +14,7 @@ export interface IUserImageDTO {
   fileName?:string;
   extension:string;
   base64:string;
+  url?:string;
   result?:any;
 }
 
@@ -30,5 +31,6 @@ export const emptyUserDTO = () : IUserDTO => ({
     extension:'',
     base64:'',
     result:'',
+    url: '',
   }
 })

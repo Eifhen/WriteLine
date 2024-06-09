@@ -69,7 +69,7 @@ const ConfigModal = forwardRef((props:IConfigModal, ref:ForwardedRef<IConfigModa
         date: props.user.date,
         image: userImageRef.current.getImage()
       }
-
+      
       setDisable(true);
       UserService.UpdateUser(props.user.guid!, data)
       .then((res)=> {

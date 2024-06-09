@@ -4,6 +4,7 @@ import { CodigoHTTP } from './codigosHttp';
 import IImageManager from '../Interfaces/image.manager.interface';
 import { IMAGE_BASE64_PATTERN } from '../Patterns/image.pattern';
 import path from 'path';
+import cloudinaryManager from '../Configuration/cloudinary.manager';
 
 
 export default class ImageManager implements IImageManager {
@@ -14,7 +15,7 @@ export default class ImageManager implements IImageManager {
   }
 
   /** Guarda la imagen en el servidor y retorna el nombre del archivo*/
-  async SaveImage(imageBase64:string, fileName:string, extension:string, customPath?:string){
+  SaveImage = async (imageBase64:string, fileName:string, extension:string, customPath?:string) => {
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
 
@@ -33,7 +34,7 @@ export default class ImageManager implements IImageManager {
   }
 
   /** Elimina la imagen del servidor */
-  async RemoveImage(imageName:string, extension:string, imagePath?:string, ){
+  RemoveImage = async (imageName:string, extension:string, imagePath?:string, ) => {
     try {
       const fullFileName = `${imageName}.${extension}`;
       const image = `${imagePath ?? this._path}/${fullFileName}`;
@@ -52,7 +53,7 @@ export default class ImageManager implements IImageManager {
     }
   }
   /** Obtiene la imagen deseada en base64 */
-  async GetImage(fileName:string, extension:string, path?:string){
+  GetImage = async (fileName:string, extension:string, path?:string) => {
     try {
       const imagePath = `${path ?? this._path}/${fileName}.${extension}`;
       const data = await fs.readFile(imagePath);
@@ -69,14 +70,55 @@ export default class ImageManager implements IImageManager {
     }
   }
 
-  GetImageFormat(base64:string, extension:string){
+  GetImageFormat = (base64:string, extension:string) => {
     const imageBase64 =  base64.replace(IMAGE_BASE64_PATTERN, '');
     return `data:image/${extension};base64,${imageBase64}`;
   }
 
-  setUserImageName(guid:string){
+  setUserImageName = (guid:string) =>{
     return `user_${guid}`;
   }
+
+  SaveImageInCloud = async (fileName: string, extension: string, imageBase64: string): Promise<any> => {
+    try {
+      return await cloudinaryManager.UploadImage(fileName, extension, imageBase64);
+    }
+    catch(err:any){
+      throw ErrorHandler(
+        err.status ?? CodigoHTTP.InternalServerError, 
+        err.message,
+        err.path ?? __filename
+      );
+    }
+  } 
+
+  GetImageCloudURL = async (fileName: string, extension?: string | undefined): Promise<string> => {
+    try {
+      return await cloudinaryManager.GetImage(fileName, extension);
+    }
+    catch(err:any){
+      throw ErrorHandler(
+        err.status ?? CodigoHTTP.InternalServerError, 
+        `Error al intentar guardar el archivo: ${err.message}`,
+        err.path ?? __filename
+      );
+    }
+  } 
+
+  DeleteImageFromCloud = async (fileName: string, extension?: string): Promise<any> => {
+    try {
+      return await cloudinaryManager.DeleteImage(fileName, extension);
+    }
+    catch(err:any){
+      throw ErrorHandler(
+        CodigoHTTP.InternalServerError, 
+        `Error al intentar eliminar el archivo: ${err.message}`,
+        __filename
+      );
+    }
+    
+  }
+
 
 }
 

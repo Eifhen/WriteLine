@@ -23,6 +23,7 @@ export interface IUserImage {
   fileName:string;
   extension:string;
   base64?:string;
+  url?: string;
 }
 
 /******************************************
@@ -120,7 +121,7 @@ const User_BD_Schema = new Schema<IUserModel>({
 // la propiedad password para que la misma no se 
 // guarde en texto plano
 User_BD_Schema.pre('save', async function (next){
-  if(!this.isModified){ next(); }
+  if(!this.isModified("password")){ next(); }
   this.password = await EncryptPassword(this.password);
 });
 

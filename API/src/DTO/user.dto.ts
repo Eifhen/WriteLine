@@ -18,6 +18,7 @@ export interface IUserImageDTO{
   fileName:string;
   extension:string;
   base64?:string;
+  url?:string;
 }
 
 /******************************************

@@ -12,5 +12,11 @@ export default interface IImageManager {
   setUserImageName(guid:string): string;
 
   /** Da formato a una imagen en base64 */
-  GetImageFormat(base64: string, extension: string): string
+  GetImageFormat(base64: string, extension: string): string;
+
+
+  /* SaveImage in cloud */
+  SaveImageInCloud (fileName:string, extension:string, imageBase64:string): Promise<any>;
+  GetImageCloudURL (fileName:string, extension?:string) : Promise<string>;
+  DeleteImageFromCloud (fileName:string, extension?:string) : Promise<any>;
 }

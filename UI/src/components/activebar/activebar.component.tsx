@@ -41,7 +41,6 @@ export default function ActiveBar (props:IActiveBar) {
     setDisable(false);
   }
 
-
   return (
     <>
       <aside className='activebar'>
@@ -69,8 +68,8 @@ export default function ActiveBar (props:IActiveBar) {
             className='user-configuration'
             onClick={()=> configModalRef.current?.openModal('profile')}
           >
-            {props.user && props.user.image && props.user.image.base64 !== '' ? (
-              <img title="Ver perfil" src={props.user.image.base64} alt="foto del usuario" />
+            {props.user && props.user.image && props.user.image.url !== '' ? (
+              <img title="Ver perfil" src={props.user.image.url} alt="foto del usuario" />
             ): (
               <img title="Ver perfil" src={UserIcon} alt="foto del usuario" />
             )}
